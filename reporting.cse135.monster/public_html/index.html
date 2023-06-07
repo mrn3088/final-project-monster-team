@@ -83,64 +83,75 @@
         let languageData = [];
 
         let data = response.data;
-        let enCount = 0;
-        let zhCount = 0;
+        let languageLoadTimes = {
+          'en-US': [],
+          'zh-CN': []
+        };
 
         for (let i = 0; i < data.length; i++) {
           let value = data[i];
           let language = value.language;
 
-          if (language.includes("en-US")) {
-            enCount++;
-          } else if (language.includes("zh-CN")) {
-            zhCount++;
+          if (language === 'en-US' || language === 'zh-CN') {
+            languageLoadTimes[language].push(value.totalLoadTime);
           }
         }
 
-        languageData.push({
-          language: "en-US",
-          count: enCount
-        });
+        for (let language in languageLoadTimes) {
+          let loadTimes = languageLoadTimes[language];
+          let averageLoadTime = calculateAverageLoadTime(loadTimes);
 
-        languageData.push({
-          language: "zh-CN",
-          count: zhCount
-        });
+          languageData.push({
+            language: language,
+            averageLoadTime: averageLoadTime
+          });
+        }
 
         // Update the ZingGrid with the new data
         document.getElementById('languageGrid').setData(languageData);
+
+        // Create the ZingChart configuration for average load times
+        let chartData = [];
+        for (let i = 0; i < languageData.length; i++) {
+          let language = languageData[i].language;
+          let averageLoadTime = languageData[i].averageLoadTime;
+
+          chartData.push({
+            values: [averageLoadTime],
+            text: language
+          });
+        }
+
+        let averageLoadTimeConfig = {
+          type: 'bar',
+          series: chartData
+        };
+
+        // Render the average load time chart
+        zingchart.render({
+          id: 'averageLoadTimeChart',
+          data: averageLoadTimeConfig,
+          height: '300',
+          width: '400'
+        });
       })
       .catch(error => {
         console.error('Error fetching language data:', error);
       });
 
-    axios.get('https://cse135.monster/api/performance/')
-      .then(response => {
-        let loadTimeData = {
-          "type": "line",
-          "series": [
-            {"values": []},  // pageStartLoad times
-            {"values": []}   // totalLoadTime times
-          ]
-        };
-        let data = response.data;
-        for(let i = 0; i < data.length; i++) {
-          let value = data[i];
-          loadTimeData.series[0].values.push(value['pageStartLoad']);
-          loadTimeData.series[1].values.push(value['totalLoadTime']);
-        }
-        
-        // Update the ZingChart with the new data
-        zingchart.render({
-          id: 'load-time-chart',
-          data: loadTimeData,
-          height: 400,
-          width: 600
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching performance data:', error);
-      });
+    // Function to calculate the average load time
+    function calculateAverageLoadTime(loadTimes) {
+      if (loadTimes.length === 0) {
+        return 0;
+      }
+
+      let sum = 0;
+      for (let i = 0; i < loadTimes.length; i++) {
+        sum += loadTimes[i];
+      }
+
+      return (sum / loadTimes.length).toFixed(2); // Round to 2 decimal places
+    }
 
       
   </script>
