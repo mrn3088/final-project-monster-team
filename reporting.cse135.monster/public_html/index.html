@@ -27,7 +27,7 @@
     ];
 
     // Fetch data from your Express app
-    axios.get('https://cse135.monster:3001/api/static')  // 注意这里使用http，不是https
+    axios.get('https://cse135.monster:3001/api/StaticRecords')  // 注意这里使用http，不是https
       .then(response => {
         var records = response.data;
         if (!Array.isArray(records)) {
