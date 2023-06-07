@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <title>Data Visualization</title>
+  <!-- Include ZingGrid and axios libraries -->
+  <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <title>Data Visualization</title>
 </head>
+
 
 <body>
   <!-- Define your ZingGrid -->
@@ -30,7 +30,7 @@
     ];
 
     // Fetch data from your Express app
-    axios.get('http://localhost:3005/static')
+    axios.get('http://localhost:3001/static')
       .then(response => {
         var records = response.data;
         for (var i = 0; i < records.length; i++) {
