@@ -39,17 +39,17 @@
 
   <div id="languageLoadTimeChart"></div>
 
-  <div id = "browserLoadTimeChart"></div>
+  <div id="browserLoadTimeChart"></div>
+
 
   <script>
     // Initialize arrays to store the counts of each browser type and language
     var browserData = [
-      // Your existing browser data here
-      { browserType: 'Chrome', count: 0 },
-      { browserType: 'Firefox', count: 0 },
-      { browserType: 'Safari', count: 0 },
-      { browserType: 'Internet Explorer', count: 0 },
-      { browserType: 'Other', count: 0 }
+      { browserType: 'Chrome', count: 0, loadTimes: [] },
+      { browserType: 'Firefox', count: 0, loadTimes: [] },
+      { browserType: 'Safari', count: 0, loadTimes: [] },
+      { browserType: 'Internet Explorer', count: 0, loadTimes: [] },
+      { browserType: 'Other', count: 0, loadTimes: [] }
     ];
 
     // Fetch data for browser usage from your Express app
@@ -134,6 +134,16 @@
           let loadTime = endLoad - startLoad;
 
           loadTimes.push(loadTime);
+          
+          let browserType = value.browserType;
+
+          // Find the corresponding browser data and add the load time
+          for (let j = 0; j < browserData.length; j++) {
+            if (browserData[j].browserType === browserType) {
+              browserData[j].loadTimes.push(loadTime);
+              break;
+            }
+          }
         }
 
         for (let i = 0; i < loadTimes.length; i++) {
@@ -232,6 +242,7 @@
         // Create an object to store language load time data
         let languageLoadTimeData = {};
 
+        
         // Process load time data
         for (let i = 0; i < loadTimeData.length; i++) {
           let loadTimeItem = loadTimeData[i];
@@ -319,6 +330,46 @@
       return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
     }
     // Initialize objects to store the counts of each browser type and the total load times
+
+        // Calculate average load time for each browser
+    let browserAverageLoadTimes = browserData.map(data => {
+      let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
+      return {
+        browserType: data.browserType,
+        averageLoadTime: parseFloat(averageLoadTime)
+      };
+    });
+
+    // Create the ZingChart configuration for browser and load time relationship
+    let browserLoadTimeConfig = {
+      type: 'bar',
+      series: [
+        {
+          values: browserAverageLoadTimes.map(data => data.averageLoadTime),
+          text: 'Average Load Time'
+        }
+      ],
+      labels: {
+        template: '%v ms'
+      },
+      scaleX: {
+        labels: browserAverageLoadTimes.map(data => data.browserType)
+      },
+      scaleY: {
+        values: '0:400:100'
+      },
+      title: {
+        text: "Average loading time for different browsers"
+      }
+    };
+
+    // Render the browser and load time relationship chart
+    zingchart.render({
+      id: 'browserLoadTimeChart',
+      data: browserLoadTimeConfig,
+      height: '400',
+      width: '600'
+    });
 
   </script>
 </body>
