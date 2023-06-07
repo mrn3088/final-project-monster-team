@@ -114,7 +114,9 @@
         console.error('Error fetching language data:', error);
       });
 
-      axios.get('https://cse135.monster/api/performance')
+      
+    // Fetch data for performance from your Express app
+    axios.get('https://cse135.monster/api/performance')
       .then(response => {
         let loadTimes = [];
         let loadTimeCounts = {};
@@ -150,12 +152,9 @@
 
           loadTimeDistribution.push({
             zone: zone,
-            percentage: percentage
+            percentage: parseFloat(percentage)
           });
         }
-
-        // Sort load time distribution by zone
-        loadTimeDistribution.sort((a, b) => (a.zone > b.zone) ? 1 : -1);
 
         // Create the ZingChart configuration for load time distribution
         let loadTimeDistributionConfig = {
@@ -170,7 +169,11 @@
             template: '%v%'
           },
           scaleX: {
-            labels: loadTimeDistribution.map(data => data.zone)
+            labels: loadTimeDistribution.map(data => data.zone),
+            itemsOverlap: true,
+            item: {
+              angle: -45
+            }
           }
         };
 
