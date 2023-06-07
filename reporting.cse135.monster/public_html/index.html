@@ -114,39 +114,10 @@
         console.error('Error fetching language data:', error);
       });
 
-    axios.get('https://cse135.monster/api/performance/')
-      .then(response => {
-        let loadTimeData = {
-          "type": "line",
-          "series": [
-            {"values": []},  // pageStartLoad times
-            {"values": []}   // totalLoadTime times
-          ]
-        };
-        let data = response.data;
-        for(let i = 0; i < data.length; i++) {
-          let value = data[i];
-          loadTimeData.series[0].values.push(value['pageStartLoad']);
-          loadTimeData.series[1].values.push(value['totalLoadTime']);
-        }
-        
-        // Update the ZingChart with the new data
-        zingchart.render({
-          id: 'load-time-chart',
-          data: loadTimeData,
-          height: 400,
-          width: 600
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching performance data:', error);
-      });
-
-      
-    // Fetch data for performance from your Express app
-    axios.get('https://cse135.monster/api/performance')
+      axios.get('https://cse135.monster/api/performance')
       .then(response => {
         let loadTimes = [];
+        let loadTimeCounts = {};
 
         let data = response.data;
 
@@ -159,14 +130,42 @@
           loadTimes.push(loadTime);
         }
 
+        for (let i = 0; i < loadTimes.length; i++) {
+          let loadTime = loadTimes[i];
+          let zone = getLoadTimeZone(loadTime);
+
+          if (!loadTimeCounts[zone]) {
+            loadTimeCounts[zone] = 0;
+          }
+
+          loadTimeCounts[zone]++;
+        }
+
+        let totalLoadTimes = loadTimes.length;
+        let loadTimeDistribution = [];
+
+        for (let zone in loadTimeCounts) {
+          let count = loadTimeCounts[zone];
+          let percentage = ((count / totalLoadTimes) * 100).toFixed(2);
+
+          loadTimeDistribution.push({
+            zone: zone,
+            percentage: percentage
+          });
+        }
+
         // Create the ZingChart configuration for load time distribution
         let loadTimeDistributionConfig = {
           type: 'bar',
           series: [
             {
-              values: loadTimes
+              values: loadTimeDistribution.map(data => data.percentage),
+              text: 'Load Time Distribution'
             }
-          ]
+          ],
+          labels: {
+            template: '%v%'
+          }
         };
 
         // Render the load time distribution chart
@@ -180,6 +179,21 @@
       .catch(error => {
         console.error('Error fetching performance data:', error);
       });
+
+    // Function to determine the load time zone
+    function getLoadTimeZone(loadTime) {
+      if (loadTime >= 0 && loadTime <= 100) {
+        return '0-100 ms';
+      } else if (loadTime > 100 && loadTime <= 200) {
+        return '100-200 ms';
+      } else if (loadTime > 200 && loadTime <= 300) {
+        return '200-300 ms';
+      } else if (loadTime > 300 && loadTime <= 400) {
+        return '300-400 ms';
+      } else {
+        return '> 400 ms';
+      }
+    }
   </script>
 </body>
 </html>
