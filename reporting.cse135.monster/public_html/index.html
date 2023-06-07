@@ -83,24 +83,28 @@
         let languageData = [];
 
         let data = response.data;
-        let languageCountMap = new Map();
+        let enCount = 0;
+        let zhCount = 0;
 
         for (let i = 0; i < data.length; i++) {
           let value = data[i];
           let language = value.language;
 
-          if (languageCountMap.has(language)) {
-            languageCountMap.set(language, languageCountMap.get(language) + 1);
-          } else {
-            languageCountMap.set(language, 1);
+          if (language.includes("en-US")) {
+            enCount++;
+          } else if (language.includes("zh-CN")) {
+            zhCount++;
           }
         }
 
-        languageCountMap.forEach((count, language) => {
-          languageData.push({
-            language: language,
-            count: count
-          });
+        languageData.push({
+          language: "en-US",
+          count: enCount
+        });
+
+        languageData.push({
+          language: "zh-CN",
+          count: zhCount
         });
 
         // Update the ZingGrid with the new data
