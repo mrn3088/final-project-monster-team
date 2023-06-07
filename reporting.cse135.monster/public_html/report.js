@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', (event) => {
-    fetch('http://localhost:3000/posts')
+    fetch('http://localhost:3005/posts')
       .then(response => response.json())
       .then(data => {
         const zgRef = document.querySelector('zing-grid');
