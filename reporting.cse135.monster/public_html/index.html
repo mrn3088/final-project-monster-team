@@ -34,6 +34,15 @@
         //...
     });
 
+    axios.get('https://cse135.monster/api/data')
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+
     // Fetch data from your Express app
     axios.get('https://cse135.monster:3005/static')
       .then(response => {
