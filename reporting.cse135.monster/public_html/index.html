@@ -8,77 +8,21 @@
   <title>Data Visualization</title>
 </head>
 <body>
-  <!-- Define your ZingGrid for Browser usage -->
+  <!-- Define your ZingGrid for language usage -->
   <zing-grid
-    id="browserGrid"
-    caption="Browser Usage"
+    id="languageGrid"
+    caption="Language Usage"
     data='[]'>
-    <zg-column index="browserType" header="Browser Type"></zg-column>
+    <zg-column index="language" header="Language"></zg-column>
     <zg-column index="count" header="Count"></zg-column>
   </zing-grid>
 
-  <!-- Define your ZingGrid for language usage -->
-  <zing-grid
-  id="languageGrid"
-  caption="Language Usage"
-  data='[]'>
-  <zg-column index="language" header="Language"></zg-column>
-  <zg-column index="count" header="Count"></zg-column>
-  </zing-grid>
-
-  <!-- Define your ZingChart for load times -->
-  <div id="load-time-chart"></div>
-
-  <!-- Define your activity data section -->
-  <div id="activity">
-    <h1>Activity Data Record</h1>
-    <div id="userJSCookie"></div>
-  </div>
-
+  <!-- Define your ZingChart for average load times -->
   <div id="averageLoadTimeChart"></div>
 
   <script>
-    // Initialize arrays to store the counts of each browser type and language
-    var browserData = [
-      // Your existing browser data here
-      { browserType: 'Chrome', count: 0 },
-      { browserType: 'Firefox', count: 0 },
-      { browserType: 'Safari', count: 0 },
-      { browserType: 'Internet Explorer', count: 0 },
-      { browserType: 'Other', count: 0 }
-    ];
-
     // Fetch data for browser usage from your Express app
     axios.get('https://cse135.monster/api/static')
-      .then(response => {
-        // Your existing logic for browserData here
-        var records = response.data;
-        if (!Array.isArray(records)) {
-          console.error('Response data is not an array:', records);
-          return;
-        }
-        for (var i = 0; i < records.length; i++) {
-          var userAgent = records[i].userAgent;
-          if (userAgent.includes('Chrome')) {
-            browserData[0].count++;
-          } else if (userAgent.includes('Firefox')) {
-            browserData[1].count++;
-          } else if (userAgent.includes('Safari')) {
-            browserData[2].count++;
-          } else if (userAgent.includes('Internet Explorer')) {
-            browserData[3].count++;
-          } else {
-            browserData[4].count++;
-          }
-        }
-        // Update the ZingGrid with the new data
-        document.getElementById('browserGrid').setData(browserData);
-      })
-      .catch(error => {
-        console.error('Error fetching browser data:', error);
-      });
-  // Fetch data for browser usage from your Express app
-  axios.get('https://cse135.monster/api/static')
       .then(response => {
         let browserData = [];
 
