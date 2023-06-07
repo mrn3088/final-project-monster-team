@@ -365,6 +365,32 @@
 
         // Update the ZingGrid with the new data
         document.getElementById('browserLoadTimeChart').setData(browserAverageLoadTimes);
+            
+        // Prepare the data for ZingChart
+        let chartConfig = {
+          type: 'bar',
+          title: {
+            text: 'Average Loading Time by Browser Type',
+          },
+          scaleX: {
+            labels: browserAverageLoadTimes.map(data => data.browserType)
+          },
+          series: [{
+            values: browserAverageLoadTimes.map(data => data.averageLoadTime)
+          }],
+          title: {
+            text: "Average loading time for different browsers"
+          }
+        };
+
+        // Render the chart
+        zingchart.render({
+          id: 'browserLoadTimeChart',
+          data: chartConfig,
+          height: '400',
+          width: '600'
+        });
+      
       })
       .catch(error => {
         console.error('Error fetching data:', error);
