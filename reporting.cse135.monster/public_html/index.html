@@ -1,82 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Include ZingGrid library -->
+  <!-- Include ZingGrid and axios libraries -->
   <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <!-- Define your ZingGrid -->
   <zing-grid
     id="myGrid"
-    caption="Browser Data"
-    data='[
-      {"browserType": "Chrome", "timeZone": "America/Los_Angeles", "language": "en-US", "networkDelay": 123.45},
-      {"browserType": "Firefox", "timeZone": "America/New_York", "language": "en-US", "networkDelay": 234.56},
-      // add more data here
-    ]'>
+    caption="Browser Usage"
+    data='[]'>
     <zg-column index="browserType" header="Browser Type"></zg-column>
-    <zg-column index="timeZone" header="Time Zone"></zg-column>
-    <zg-column index="language" header="Language"></zg-column>
-    <zg-column index="networkDelay" header="Network Delay"></zg-column>
+    <zg-column index="count" header="Count"></zg-column>
   </zing-grid>
 
   <script>
-    // Add your JavaScript code here
-    // 定义一个函数来检测浏览器类型
-function getBrowserType() {
-    var userAgent = navigator.userAgent;
-    if (userAgent.indexOf("Opera") > -1) {
-        return 'Opera';
-    } else if (userAgent.indexOf("Firefox") > -1) {
-        return 'Firefox';
-    } else if (userAgent.indexOf("Chrome") > -1){
-        return 'Chrome';
-    } else if (userAgent.indexOf("Safari") > -1) {
-        return 'Safari';
-    } else if (userAgent.indexOf("MSIE") > -1){
-        return 'IE';
-    } else {
-        return 'Other';
-    }
-}
+    // Initialize an array to store the counts of each browser type
+    var data = [
+      { browserType: 'Chrome', count: 0 },
+      { browserType: 'Firefox', count: 0 },
+      { browserType: 'Safari', count: 0 },
+      { browserType: 'Internet Explorer', count: 0 },
+      { browserType: 'Other', count: 0 }
+    ];
 
-// 定义一个函数来获取网络延迟
-async function getNetworkDelay(url) {
-    const start = performance.now();
-    await fetch(url);
-    const end = performance.now();
-    return end - start;
-}
+    // Fetch data from your Express app
+    axios.get('http://localhost:3001/static')
+      .then(response => {
+        var records = response.data;
+        for (var i = 0; i < records.length; i++) {
+          var userAgent = records[i].userAgent;
+          if (userAgent.includes('Chrome')) {
+            data[0].count++;
+          } else if (userAgent.includes('Firefox')) {
+            data[1].count++;
+          } else if (userAgent.includes('Safari')) {
+            data[2].count++;
+          } else if (userAgent.includes('Internet Explorer')) {
+            data[3].count++;
+          } else {
+            data[4].count++;
+          }
+        }
 
-// 收集数据
-const data = {
-    browserType: getBrowserType(),
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    language: navigator.language || navigator.userLanguage,
-};
-
-// 获取网络延迟，并更新 data 对象
-getNetworkDelay('https://example.com').then(delay => {
-    data.networkDelay = delay;
-
-    // 使用 fetch 发送 POST 请求到你的 Express 应用
-    fetch('http://localhost:3005/static', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    }).then(response => {
-        console.log('数据已发送到服务器');
-    }).catch(error => {
-        console.error('发送数据时出错:', error);
-    });
-});
-
-    // For example, you can fetch data from your Express app and update the grid
-    fetch('http://localhost:3005/static')
-      .then(response => response.json())
-      .then(data => {
+        // Update the ZingGrid with the new data
         document.getElementById('myGrid').setData(data);
       });
   </script>
