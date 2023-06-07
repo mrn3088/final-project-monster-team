@@ -1,59 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Include ZingGrid and axios libraries -->
+  <!-- Include ZingGrid, ZingChart, and axios libraries -->
   <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <title>Data Visualization</title>
 </head>
 <body>
-  <!-- Define your ZingGrid -->
+  <!-- Define your ZingGrid for Browser usage -->
   <zing-grid
-    id="myGrid"
+    id="browserGrid"
     caption="Browser Usage"
     data='[]'>
     <zg-column index="browserType" header="Browser Type"></zg-column>
     <zg-column index="count" header="Count"></zg-column>
   </zing-grid>
 
+  <!-- Define your ZingGrid for language usage -->
+  <zing-grid
+    id="languageGrid"
+    caption="Language Usage"
+    data='[]'>
+    <zg-column index="language" header="Language"></zg-column>
+    <zg-column index="count" header="Count"></zg-column>
+  </zing-grid>
+
+  <!-- Define your ZingChart for load times -->
+  <div id="load-time-chart"></div>
+
   <script>
-    // Initialize an array to store the counts of each browser type
-    var data = [
-      { browserType: 'Chrome', count: 0 },
-      { browserType: 'Firefox', count: 0 },
-      { browserType: 'Safari', count: 0 },
-      { browserType: 'Internet Explorer', count: 0 },
-      { browserType: 'Other', count: 0 }
+    // Initialize arrays to store the counts of each browser type and language
+    var browserData = [
+      // Your existing browser data here
     ];
+    var languageData = [
+      // Similar to browserData, but for languages
+    ];
+    var loadTimeData = {
+      "type": "line",
+      "series": [
+        {"values": []},  // pageStartLoad times
+        {"values": []}   // totalLoadTime times
+      ]
+    };
 
     // Fetch data from your Express app
-    axios.get('https://cse135.monster/api/static')  // 注意这里使用http，不是https
+    axios.get('https://cse135.monster/api/static')
       .then(response => {
-        var records = response.data;
-        if (!Array.isArray(records)) {
-          console.error('Response data is not an array:', records);
-          return;
-        }
-        for (var i = 0; i < records.length; i++) {
-          var userAgent = records[i].userAgent;
-          if (userAgent.includes('Chrome')) {
-            data[0].count++;
-          } else if (userAgent.includes('Firefox')) {
-            data[1].count++;
-          } else if (userAgent.includes('Safari')) {
-            data[2].count++;
-          } else if (userAgent.includes('Internet Explorer')) {
-            data[3].count++;
-          } else {
-            data[4].count++;
-          }
-        }
+        // Your existing logic for browserData here
+        // You can add similar logic for languageData if necessary
 
         // Update the ZingGrid with the new data
-        document.getElementById('myGrid').setData(data);
+        document.getElementById('browserGrid').setData(browserData);
+        document.getElementById('languageGrid').setData(languageData);
       })
       .catch(error => {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching static data:', error);
+      });
+
+    axios.get('https://cse135.monster/api/performance/')
+      .then(response => {
+        let data = response.data;
+        for(let i = 0; i < data.length; i++) {
+          let value = data[i];
+          loadTimeData.series[0].values.push(value['pageStartLoad']);
+          loadTimeData.series[1].values.push(value['totalLoadTime']);
+        }
+        
+        // Update the ZingChart with the new data
+        zingchart.render({
+          id: 'load-time-chart',
+          data: loadTimeData,
+          height: 400,
+          width: 600
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching performance data:', error);
       });
   </script>
 </body>
