@@ -207,6 +207,7 @@
 
 
     // Fetch data for performance from your Express app
+    // Fetch data for performance from your Express app
     axios.get('https://cse135.monster/api/performance')
       .then(performanceResponse => {
         let loadTimeData = performanceResponse.data;
@@ -273,6 +274,11 @@
               },
               scaleX: {
                 labels: ['en-US', 'zh-CN']
+              },
+              scaleY: {
+                guide: {
+                  visible: true
+                }
               }
             };
 
