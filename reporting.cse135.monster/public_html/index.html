@@ -40,6 +40,7 @@
   <div id="languageLoadTimeChart"></div>
 
   <div id = "browserLoadTimeChart"></div>
+
   <script>
     // Initialize arrays to store the counts of each browser type and language
     var browserData = [
@@ -309,92 +310,82 @@
 
       return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
     }
-        // Initialize objects to store the counts of each browser type and the total load times
-
     // Initialize objects to store the counts of each browser type and the total load times
-    var browserLoadTimes = {
-      'Chrome': { count: 0, totalLoadTime: 0 },
-      'Firefox': { count: 0, totalLoadTime: 0 },
-      'Safari': { count: 0, totalLoadTime: 0 },
-      'Internet Explorer': { count: 0, totalLoadTime: 0 },
-      'Other': { count: 0, totalLoadTime: 0 }
+// Fetch data from your Express app
+Promise.all([
+  axios.get('https://cse135.monster/api/performance'),
+  axios.get('https://cse135.monster/api/static')
+])
+  .then(([performanceResponse, staticResponse]) => {
+    let performanceData = performanceResponse.data;
+    let staticData = staticResponse.data;
+
+    // Process performance data and static data together
+    for (let i = 0; i < performanceData.length; i++) {
+      let performanceItem = performanceData[i];
+      let staticItem = staticData[i]; // Assuming staticData and performanceData are ordered and of the same length
+
+      let loadTime = performanceItem.totalLoadTime;
+      let userAgent = staticItem.userAgent;
+
+      let browserType = 'Other';
+      if (userAgent.includes('Chrome')) {
+        browserType = 'Chrome';
+      } else if (userAgent.includes('Firefox')) {
+        browserType = 'Firefox';
+      } else if (userAgent.includes('Safari')) {
+        browserType = 'Safari';
+      } else if (userAgent.includes('Internet Explorer')) {
+        browserType = 'Internet Explorer';
+      }
+
+      browserLoadTimes[browserType].count++;
+      browserLoadTimes[browserType].totalLoadTime += loadTime;
+    }
+
+    // Calculate average load time for each browser type
+    let browserAverageLoadTimes = [];
+    for (let browserType in browserLoadTimes) {
+      let loadTimesData = browserLoadTimes[browserType];
+      let averageLoadTime = loadTimesData.count === 0 ? 0 : loadTimesData.totalLoadTime / loadTimesData.count;
+      browserAverageLoadTimes.push({
+        'browserType': browserType,
+        'averageLoadTime': averageLoadTime
+      });
+    }
+
+    // Prepare the data for ZingChart
+    let chartConfig = {
+      type: 'bar',
+      title: {
+        text: 'Average Loading Time by Browser Type',
+      },
+      scaleX: {
+        labels: browserAverageLoadTimes.map(data => data.browserType)
+      },
+      series: [{
+        values: browserAverageLoadTimes.map(data => data.averageLoadTime),
+        text: 'Average Load Time'
+      }],
+      labels: {
+        template: '%v ms'
+      },
+      scaleY: {
+        values: '0:4000:500'
+      },
     };
 
-    // Fetch data from your Express app
-    Promise.all([
-      axios.get('https://cse135.monster/api/performance'),
-      axios.get('https://cse135.monster/api/static')
-    ])
-      .then(([performanceResponse, staticResponse]) => {
-        let performanceData = performanceResponse.data;
-        let staticData = staticResponse.data;
-
-        // Process performance data and static data together
-        for (let i = 0; i < performanceData.length; i++) {
-          let performanceItem = performanceData[i];
-          let staticItem = staticData[i]; // Assuming staticData and performanceData are ordered and of the same length
-
-          let loadTime = performanceItem.totalLoadTime;
-          let userAgent = staticItem.userAgent;
-
-          let browserType = 'Other';
-          if (userAgent.includes('Chrome')) {
-            browserType = 'Chrome';
-          } else if (userAgent.includes('Firefox')) {
-            browserType = 'Firefox';
-          } else if (userAgent.includes('Safari')) {
-            browserType = 'Safari';
-          } else if (userAgent.includes('Internet Explorer')) {
-            browserType = 'Internet Explorer';
-          }
-
-          browserLoadTimes[browserType].count++;
-          browserLoadTimes[browserType].totalLoadTime += loadTime;
-        }
-
-        // Calculate average load time for each browser type
-        let browserAverageLoadTimes = [];
-        for (let browserType in browserLoadTimes) {
-          let loadTimesData = browserLoadTimes[browserType];
-          let averageLoadTime = calculateAverageLoadTime(loadTimesData.totalLoadTime, loadTimesData.count);
-          browserAverageLoadTimes.push({
-            'browserType': browserType,
-            'averageLoadTime': averageLoadTime
-          });
-        }
-
-        // Update the ZingGrid with the new data
-        document.getElementById('browserLoadTimeChart').setData(browserAverageLoadTimes);
-            
-        // Prepare the data for ZingChart
-        let chartConfig = {
-          type: 'bar',
-          title: {
-            text: 'Average Loading Time by Browser Type',
-          },
-          scaleX: {
-            labels: browserAverageLoadTimes.map(data => data.browserType)
-          },
-          series: [{
-            values: browserAverageLoadTimes.map(data => data.averageLoadTime)
-          }],
-          title: {
-            text: "Average loading time for different browsers"
-          }
-        };
-
-        // Render the chart
-        zingchart.render({
-          id: 'browserLoadTimeChart',
-          data: chartConfig,
-          height: '400',
-          width: '600'
-        });
-      
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    // Render the chart
+    zingchart.render({
+      id: 'browserLoadTimeChart',
+      data: chartConfig,
+      height: '400',
+      width: '600'
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+  });
 
   </script>
 </body>
