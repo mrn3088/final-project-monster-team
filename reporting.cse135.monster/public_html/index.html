@@ -77,35 +77,79 @@
       .catch(error => {
         console.error('Error fetching browser data:', error);
       });
+  // Fetch data for browser usage from your Express app
+  axios.get('https://cse135.monster/api/static')
+      .then(response => {
+        let browserData = [];
 
-      axios.get('https://cse135.monster/api/static')
+        let data = response.data;
+        let browserCounts = {
+          'Chrome': 0,
+          'Firefox': 0,
+          'Safari': 0,
+          'Internet Explorer': 0,
+          'Other': 0
+        };
+
+        for (let i = 0; i < data.length; i++) {
+          let value = data[i];
+          let userAgent = value.userAgent;
+
+          if (userAgent.includes('Chrome')) {
+            browserCounts['Chrome']++;
+          } else if (userAgent.includes('Firefox')) {
+            browserCounts['Firefox']++;
+          } else if (userAgent.includes('Safari')) {
+            browserCounts['Safari']++;
+          } else if (userAgent.includes('Internet Explorer')) {
+            browserCounts['Internet Explorer']++;
+          } else {
+            browserCounts['Other']++;
+          }
+        }
+
+        for (let browserType in browserCounts) {
+          browserData.push({
+            browserType: browserType,
+            count: browserCounts[browserType]
+          });
+        }
+
+        // Update the ZingGrid with the new data
+        document.getElementById('browserGrid').setData(browserData);
+      })
+      .catch(error => {
+        console.error('Error fetching browser data:', error);
+      });
+
+    // Fetch data for language activity from your Express app
+    axios.get('https://cse135.monster/api/static')
       .then(response => {
         let languageData = [];
 
         let data = response.data;
-        let enCount = 0;
-        let zhCount = 0;
+        let languageCounts = {
+          'en-US': 0,
+          'zh-CN': 0
+        };
 
         for (let i = 0; i < data.length; i++) {
           let value = data[i];
           let language = value.language;
 
-          if (language.includes("en-US")) {
-            enCount++;
-          } else if (language.includes("zh-CN")) {
-            zhCount++;
+          if (language === 'en-US') {
+            languageCounts['en-US']++;
+          } else if (language === 'zh-CN') {
+            languageCounts['zh-CN']++;
           }
         }
 
-        languageData.push({
-          language: "en-US",
-          count: enCount
-        });
-
-        languageData.push({
-          language: "zh-CN",
-          count: zhCount
-        });
+        for (let language in languageCounts) {
+          languageData.push({
+            language: language,
+            count: languageCounts[language]
+          });
+        }
 
         // Update the ZingGrid with the new data
         document.getElementById('languageGrid').setData(languageData);
@@ -114,6 +158,7 @@
         console.error('Error fetching language data:', error);
       });
 
+    // Fetch data for load times from your Express app
     axios.get('https://cse135.monster/api/performance/')
       .then(response => {
         let loadTimeData = {
@@ -123,13 +168,15 @@
             {"values": []}   // totalLoadTime times
           ]
         };
-        let data = response.data;
-        for(let i = 0; i < data.length; i++) {
-          let value = data[i];
-          loadTimeData.series[0].values.push(value['pageStartLoad']);
-          loadTimeData.series[1].values.push(value['totalLoadTime']);
+
+        let performanceData = response.data;
+
+        for (let i = 0; i < performanceData.length; i++) {
+          let value = performanceData[i];
+          loadTimeData.series[0].values.push(value.pageStartLoad);
+          loadTimeData.series[1].values.push(value.totalLoadTime);
         }
-        
+
         // Update the ZingChart with the new data
         zingchart.render({
           id: 'load-time-chart',
@@ -141,85 +188,6 @@
       .catch(error => {
         console.error('Error fetching performance data:', error);
       });
-
-
-    
-    // Fetch data for language activity from your Express app
-    axios.get('https://cse135.monster/api/static')
-      .then(response => {
-        let languageData = [];
-
-        let data = response.data;
-        let languageLoadTimes = {};
-
-        for (let i = 0; i < data.length; i++) {
-          let value = data[i];
-          let language = value.language;
-
-          if (language.includes("en-US") || language.includes("zh-CN")) {
-            if (!languageLoadTimes[language]) {
-              languageLoadTimes[language] = [];
-            }
-
-            languageLoadTimes[language].push(value.totalLoadTime);
-          }
-        }
-
-        for (let language in languageLoadTimes) {
-          let loadTimes = languageLoadTimes[language];
-          let averageLoadTime = calculateAverageLoadTime(loadTimes);
-
-          languageData.push({
-            language: language,
-            averageLoadTime: averageLoadTime
-          });
-        }
-
-        // Update the ZingGrid with the new data
-        document.getElementById('languageGrid').setData(languageData);
-
-        // Create the ZingChart configuration for average load times
-        let chartData = [];
-        for (let i = 0; i < languageData.length; i++) {
-          let language = languageData[i].language;
-          let averageLoadTime = languageData[i].averageLoadTime;
-
-          chartData.push({
-            values: [averageLoadTime],
-            text: language
-          });
-        }
-
-        let averageLoadTimeConfig = {
-          type: 'bar',
-          series: chartData
-        };
-
-        // Render the average load time chart
-        zingchart.render({
-          id: 'averageLoadTimeChart',
-          data: averageLoadTimeConfig,
-          height: '300',
-          width: '400'
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching language data:', error);
-      });
-
-    // Function to calculate the average load time
-    function calculateAverageLoadTime(loadTimes) {
-      if (loadTimes.length === 0) {
-        return 0;
-      }
-
-      let sum = 0;
-      for (let i = 0; i < loadTimes.length; i++) {
-        sum += loadTimes[i];
-      }
-
-      return (sum / loadTimes.length).toFixed(2); // Round to 2 decimal places
-    }
   </script>
 </body>
 </html>
