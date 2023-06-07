@@ -236,6 +236,9 @@
             }
 
             // Process language data and calculate average load time
+            let enLoadTimes = [];
+            let zhLoadTimes = [];
+
             for (let i = 0; i < languageData.length; i++) {
               let languageItem = languageData[i];
               let id = languageItem.id;
@@ -243,31 +246,25 @@
 
               if (languageLoadTimeData[id]) {
                 languageLoadTimeData[id].language = language;
+
+                if (language === 'en-US') {
+                  enLoadTimes.push(...languageLoadTimeData[id].loadTimes);
+                } else if (language === 'zh-CN') {
+                  zhLoadTimes.push(...languageLoadTimeData[id].loadTimes);
+                }
               }
             }
 
             // Calculate average load time for each language
-            let languageLoadTimes = [];
-            for (let id in languageLoadTimeData) {
-              let loadTimes = languageLoadTimeData[id].loadTimes;
-              let language = languageLoadTimeData[id].language;
-              let averageLoadTime = calculateAverageLoadTime(loadTimes);
-
-              languageLoadTimes.push({
-                language: language,
-                averageLoadTime: averageLoadTime
-              });
-            }
-
-            // Sort language load times by average load time in ascending order
-            languageLoadTimes.sort((a, b) => a.averageLoadTime - b.averageLoadTime);
+            let enAverageLoadTime = calculateAverageLoadTime(enLoadTimes);
+            let zhAverageLoadTime = calculateAverageLoadTime(zhLoadTimes);
 
             // Create the ZingChart configuration for language and load time relationship
             let languageLoadTimeConfig = {
               type: 'bar',
               series: [
                 {
-                  values: languageLoadTimes.map(data => data.averageLoadTime),
+                  values: [enAverageLoadTime, zhAverageLoadTime],
                   text: 'Average Load Time'
                 }
               ],
@@ -275,11 +272,7 @@
                 template: '%v ms'
               },
               scaleX: {
-                labels: languageLoadTimes.map(data => data.language),
-                itemsOverlap: true,
-                item: {
-                  angle: -45
-                }
+                labels: ['en-US', 'zh-CN']
               }
             };
 
@@ -310,7 +303,6 @@
 
       return averageLoadTime.toFixed(2); // Round to 2 decimal places
     }
-
   </script>
 </body>
 </html>
