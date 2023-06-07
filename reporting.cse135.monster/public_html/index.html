@@ -61,15 +61,15 @@
         for (var i = 0; i < records.length; i++) {
           var userAgent = records[i].userAgent;
           if (userAgent.includes('Chrome')) {
-            data[0].count++;
+            browserData[0].count++;
           } else if (userAgent.includes('Firefox')) {
-            data[1].count++;
+            browserData[1].count++;
           } else if (userAgent.includes('Safari')) {
-            data[2].count++;
+            browserData[2].count++;
           } else if (userAgent.includes('Internet Explorer')) {
-            data[3].count++;
+            browserData[3].count++;
           } else {
-            data[4].count++;
+            browserData[4].count++;
           }
         }
         // Update the ZingGrid with the new data
