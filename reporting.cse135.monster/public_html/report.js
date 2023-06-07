@@ -429,5 +429,5 @@ app.delete('/activity/:userId', async (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://cse135.monster:${PORT}`);
+    console.log(`Server is running on https://cse135.monster:${PORT}`);
 });

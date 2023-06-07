@@ -35,7 +35,7 @@
     });
 
     // Fetch data from your Express app
-    axios.get('http://cse135.monster:3005/static')
+    axios.get('https://cse135.monster:3005/static')
       .then(response => {
         var records = response.data;
         for (var i = 0; i < records.length; i++) {
