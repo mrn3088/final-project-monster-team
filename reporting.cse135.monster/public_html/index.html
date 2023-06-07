@@ -206,106 +206,102 @@
     }
 
 
-    // Fetch data for performance from your Express app
-    axios.get('https://cse135.monster/api/performance')
-      .then(performanceResponse => {
-        let loadTimeData = performanceResponse.data;
+    // Fetch data for performance and language from your Express app
+Promise.all([
+  axios.get('https://cse135.monster/api/performance'),
+  axios.get('https://cse135.monster/api/static')
+])
+  .then(([performanceResponse, languageResponse]) => {
+    let loadTimeData = performanceResponse.data;
+    let languageData = languageResponse.data;
 
-        // Fetch data for language from your Express app
-        axios.get('https://cse135.monster/api/static')
-          .then(languageResponse => {
-            let languageData = languageResponse.data;
+    // Create an object to store language load time data
+    let languageLoadTimeData = {};
 
-            // Create an object to store language load time data
-            let languageLoadTimeData = {};
+    // Process load time data
+    for (let i = 0; i < loadTimeData.length; i++) {
+      let loadTimeItem = loadTimeData[i];
+      let id = loadTimeItem.id;
+      let loadTime = loadTimeItem.totalLoadTime;
 
-            // Process load time data
-            for (let i = 0; i < loadTimeData.length; i++) {
-              let loadTimeItem = loadTimeData[i];
-              let id = loadTimeItem.id;
-              let loadTime = loadTimeItem.totalLoadTime;
-
-              if (!languageLoadTimeData[id]) {
-                languageLoadTimeData[id] = {
-                  loadTimes: [],
-                  language: ''
-                };
-              }
-
-              languageLoadTimeData[id].loadTimes.push(loadTime);
-            }
-
-            // Process language data and calculate average load time
-            let enLoadTimes = [];
-            let zhLoadTimes = [];
-
-            for (let i = 0; i < languageData.length; i++) {
-              let languageItem = languageData[i];
-              let id = languageItem.id;
-              let language = languageItem.language;
-
-              if (languageLoadTimeData[id]) {
-                languageLoadTimeData[id].language = language;
-
-                if (language === 'en-US') {
-                  enLoadTimes.push(...languageLoadTimeData[id].loadTimes);
-                } else if (language === 'zh-CN') {
-                  zhLoadTimes.push(...languageLoadTimeData[id].loadTimes);
-                }
-              }
-            }
-
-            // Calculate average load time for each language
-            let enAverageLoadTime = calculateAverageLoadTime(enLoadTimes);
-            let zhAverageLoadTime = calculateAverageLoadTime(zhLoadTimes);
-
-            // Create the ZingChart configuration for language and load time relationship
-            let languageLoadTimeConfig = {
-              type: 'bar',
-              series: [
-                {
-                  values: [enAverageLoadTime, zhAverageLoadTime],
-                  text: 'Average Load Time'
-                }
-              ],
-              labels: {
-                template: '%v ms'
-              },
-              scaleX: {
-                labels: ['en-US', 'zh-CN']
-              },
-              scaleY: {
-                values: '0:300:100'
-              }
-            };
-
-            // Render the language and load time relationship chart
-            zingchart.render({
-              id: 'languageLoadTimeChart',
-              data: languageLoadTimeConfig,
-              height: '400',
-              width: '600'
-            });
-          })
-          .catch(error => {
-            console.error('Error fetching language data:', error);
-          });
-      })
-      .catch(error => {
-        console.error('Error fetching performance data:', error);
-      });
-
-    // Function to calculate the average load time
-    function calculateAverageLoadTime(loadTimes) {
-      if (loadTimes.length === 0) {
-        return 0;
+      if (!languageLoadTimeData[id]) {
+        languageLoadTimeData[id] = {
+          loadTimes: [],
+          language: ''
+        };
       }
 
-      let sum = loadTimes.reduce((acc, val) => acc + val, 0);
-      let averageLoadTime = sum / loadTimes.length;
-
-      return averageLoadTime.toFixed(2); // Round to 2 decimal places
+      languageLoadTimeData[id].loadTimes.push(loadTime);
     }
+
+    // Process language data and calculate average load time
+    let enLoadTimes = [];
+    let zhLoadTimes = [];
+
+    for (let i = 0; i < languageData.length; i++) {
+      let languageItem = languageData[i];
+      let id = languageItem.id;
+      let language = languageItem.language;
+
+      if (languageLoadTimeData[id]) {
+        languageLoadTimeData[id].language = language;
+
+        if (language === 'en-US') {
+          enLoadTimes.push(...languageLoadTimeData[id].loadTimes);
+        } else if (language === 'zh-CN') {
+          zhLoadTimes.push(...languageLoadTimeData[id].loadTimes);
+        }
+      }
+    }
+
+    // Calculate average load time for each language
+    let enAverageLoadTime = calculateAverageLoadTime(enLoadTimes);
+    let zhAverageLoadTime = calculateAverageLoadTime(zhLoadTimes);
+
+    // Create the ZingChart configuration for language and load time relationship
+    let languageLoadTimeConfig = {
+      type: 'bar',
+      series: [
+        {
+          values: [parseFloat(enAverageLoadTime), parseFloat(zhAverageLoadTime)],
+          text: 'Average Load Time'
+        }
+      ],
+      labels: {
+        template: '%v ms'
+      },
+      scaleX: {
+        labels: ['en-US', 'zh-CN']
+      },
+      scaleY: {
+        values: '0:300:100'
+      }
+    };
+
+    // Render the language and load time relationship chart
+    zingchart.render({
+      id: 'languageLoadTimeChart',
+      data: languageLoadTimeConfig,
+      height: '400',
+      width: '600'
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching performance and language data:', error);
+  });
+
+// Function to calculate the average load time
+function calculateAverageLoadTime(loadTimes) {
+  if (loadTimes.length === 0) {
+    return '0.00';
+  }
+
+  let sum = loadTimes.reduce((acc, val) => acc + val, 0);
+  let averageLoadTime = sum / loadTimes.length;
+
+  return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
+}
+
   </script>
 </body>
 </html>
