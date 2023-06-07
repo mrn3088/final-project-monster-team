@@ -35,7 +35,7 @@
     <div id="userJSCookie"></div>
   </div>
 
-  <div id="averageLoadTimeChart"></div>
+  <div id="loadTimeDistributionChart"></div>
 
   <script>
     // Initialize arrays to store the counts of each browser type and language
@@ -83,77 +83,103 @@
         let languageData = [];
 
         let data = response.data;
-        let languageLoadTimes = {
-          'en-US': [],
-          'zh-CN': []
-        };
+        let enCount = 0;
+        let zhCount = 0;
 
         for (let i = 0; i < data.length; i++) {
           let value = data[i];
           let language = value.language;
 
-          if (language === 'en-US' || language === 'zh-CN') {
-            languageLoadTimes[language].push(value.totalLoadTime);
+          if (language.includes("en-US")) {
+            enCount++;
+          } else if (language.includes("zh-CN")) {
+            zhCount++;
           }
         }
 
-        for (let language in languageLoadTimes) {
-          let loadTimes = languageLoadTimes[language];
-          let averageLoadTime = calculateAverageLoadTime(loadTimes);
+        languageData.push({
+          language: "en-US",
+          count: enCount
+        });
 
-          languageData.push({
-            language: language,
-            averageLoadTime: averageLoadTime
-          });
-        }
+        languageData.push({
+          language: "zh-CN",
+          count: zhCount
+        });
 
         // Update the ZingGrid with the new data
         document.getElementById('languageGrid').setData(languageData);
-
-        // Create the ZingChart configuration for average load times
-        let chartData = [];
-        for (let i = 0; i < languageData.length; i++) {
-          let language = languageData[i].language;
-          let averageLoadTime = languageData[i].averageLoadTime;
-
-          chartData.push({
-            values: [averageLoadTime],
-            text: language
-          });
-        }
-
-        let averageLoadTimeConfig = {
-          type: 'bar',
-          series: chartData
-        };
-
-        // Render the average load time chart
-        zingchart.render({
-          id: 'averageLoadTimeChart',
-          data: averageLoadTimeConfig,
-          height: '300',
-          width: '400'
-        });
       })
       .catch(error => {
         console.error('Error fetching language data:', error);
       });
 
-    // Function to calculate the average load time
-    function calculateAverageLoadTime(loadTimes) {
-      if (loadTimes.length === 0) {
-        return 0;
-      }
-
-      let sum = 0;
-      for (let i = 0; i < loadTimes.length; i++) {
-        sum += loadTimes[i];
-      }
-
-      return (sum / loadTimes.length).toFixed(2); // Round to 2 decimal places
-    }
+    axios.get('https://cse135.monster/api/performance/')
+      .then(response => {
+        let loadTimeData = {
+          "type": "line",
+          "series": [
+            {"values": []},  // pageStartLoad times
+            {"values": []}   // totalLoadTime times
+          ]
+        };
+        let data = response.data;
+        for(let i = 0; i < data.length; i++) {
+          let value = data[i];
+          loadTimeData.series[0].values.push(value['pageStartLoad']);
+          loadTimeData.series[1].values.push(value['totalLoadTime']);
+        }
+        
+        // Update the ZingChart with the new data
+        zingchart.render({
+          id: 'load-time-chart',
+          data: loadTimeData,
+          height: 400,
+          width: 600
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching performance data:', error);
+      });
 
       
+    // Fetch data for performance from your Express app
+    axios.get('https://cse135.monster/api/performance')
+      .then(response => {
+        let loadTimes = [];
+
+        let data = response.data;
+
+        for (let i = 0; i < data.length; i++) {
+          let value = data[i];
+          let startLoad = value.pageStartLoad;
+          let endLoad = value.pageEndLoad;
+          let loadTime = endLoad - startLoad;
+
+          loadTimes.push(loadTime);
+        }
+
+        // Create the ZingChart configuration for load time distribution
+        let loadTimeDistributionConfig = {
+          type: 'bar',
+          series: [
+            {
+              values: loadTimes
+            }
+          ]
+        };
+
+        // Render the load time distribution chart
+        zingchart.render({
+          id: 'loadTimeDistributionChart',
+          data: loadTimeDistributionConfig,
+          height: '400',
+          width: '600'
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching performance data:', error);
+      });
   </script>
 </body>
 </html>
