@@ -238,7 +238,7 @@
     let loadTimeZones = ['0-100 ms', '100-200 ms', '200-300 ms', '300-400 ms', '> 400 ms'];
 
 
-        // Fetch data for performance and language from your Express app
+    // Fetch data for performance and language from your Express app
     Promise.all([
       axios.get('https://cse135.monster/api/performance'),
       axios.get('https://cse135.monster/api/static')
@@ -338,16 +338,91 @@
       return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
     }
     // Initialize objects to store the counts of each browser type and the total load times
+    
+    // 创建一个对象来存储浏览器与加载时间的数据
+    var browserLoadTimeData = {};
 
-    // Calculate average load time for each browser
-    let browserAverageLoadTimes = browserData.map(data => {
-      let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
-      return {
-        browserType: data.browserType,
-        averageLoadTime: parseFloat(averageLoadTime)
-      };
+    // 从你的Express应用获取性能数据
+    axios.get('https://cse135.monster/api/performance')
+    .then(response => {
+        // 处理加载时间数据
+        var loadTimeRecords = response.data;
+        if (!Array.isArray(loadTimeRecords)) {
+          console.error('Response data is not an array:', loadTimeRecords);
+          return;
+        }
+        for (var i = 0; i < loadTimeRecords.length; i++) {
+          var id = loadTimeRecords[i].id;
+          var loadTime = loadTimeRecords[i].totalLoadTime;
+
+          if (!browserLoadTimeData[id]) {
+            browserLoadTimeData[id] = {
+              loadTimes: [],
+              browser: ''
+            };
+          }
+
+          browserLoadTimeData[id].loadTimes.push(loadTime);
+        }
+    })
+    .then(() => {
+        // 获取静态数据
+        return axios.get('https://cse135.monster/api/static')
+    })
+    .then(response => {
+        // 处理浏览器数据
+        var browserRecords = response.data;
+        if (!Array.isArray(browserRecords)) {
+          console.error('Response data is not an array:', browserRecords);
+          return;
+        }
+        for (var i = 0; i < browserRecords.length; i++) {
+          var id = browserRecords[i].id;
+          var userAgent = browserRecords[i].userAgent;
+
+          if (browserLoadTimeData[id]) {
+            if (userAgent.includes('Chrome')) {
+              browserLoadTimeData[id].browser = 'Chrome';
+              browserData[0].count++;
+              browserData[0].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+            } else if (userAgent.includes('Firefox')) {
+              browserLoadTimeData[id].browser = 'Firefox';
+              browserData[1].count++;
+              browserData[1].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+            } else if (userAgent.includes('Safari')) {
+              browserLoadTimeData[id].browser = 'Safari';
+              browserData[2].count++;
+              browserData[2].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+            } else if (userAgent.includes('Internet Explorer')) {
+              browserLoadTimeData[id].browser = 'Internet Explorer';
+              browserData[3].count++;
+              browserData[3].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+            } else {
+              browserLoadTimeData[id].browser = 'Other';
+              browserData[4].count++;
+              browserData[4].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+            }
+          }
+        }
+
+        // 计算每种浏览器的平均加载时间
+        for (var i = 0; i < browserData.length; i++) {
+          var totalLoadTime = browserData[i].loadTimes.reduce((a, b) => a + b, 0);
+          var averageLoadTime = totalLoadTime / browserData[i].loadTimes.length;
+          browserData[i].averageLoadTime = averageLoadTime;
+        }
+
+        // 更新ZingGrid的数据
+        document.getElementById('browserGrid').setData(browserData);
     });
 
+    // 计算平均加载时间的函数
+    function calculateAverageLoadTime(loadTimes) {
+      var totalLoadTime = loadTimes.reduce((a, b) => a + b, 0);
+      return totalLoadTime / loadTimes.length;
+    }
+
+    // Calculate average load time for each browser
     // Create the ZingChart configuration for browser and load time relationship
 
   </script>
