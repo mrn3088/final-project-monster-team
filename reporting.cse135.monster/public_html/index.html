@@ -207,6 +207,44 @@
           height: '400',
           width: '600'
         });
+        let browserAverageLoadTimes = browserData.map(data => {
+          let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
+          return {
+            browserType: data.browserType,
+            averageLoadTime: parseFloat(averageLoadTime)
+          };
+        });
+
+        // Create the ZingChart configuration for browser and load time relationship
+        let browserLoadTimeConfig = {
+          type: 'bar',
+          series: [
+            {
+              values: browserAverageLoadTimes.map(data => data.averageLoadTime),
+              text: 'Average Load Time'
+            }
+          ],
+          labels: {
+            template: '%v ms'
+          },
+          scaleX: {
+            labels: browserAverageLoadTimes.map(data => data.browserType)
+          },
+          scaleY: {
+            values: '0:400:100'
+          },
+          title: {
+            text: "Average loading time for different browsers"
+          }
+        };
+
+        // Render the browser and load time relationship chart
+        zingchart.render({
+          id: 'browserLoadTimeChart',
+          data: browserLoadTimeConfig,
+          height: '400',
+          width: '600'
+        });
       })
       .catch(error => {
         console.error('Error fetching performance data:', error);
@@ -341,35 +379,7 @@
     });
 
     // Create the ZingChart configuration for browser and load time relationship
-    let browserLoadTimeConfig = {
-      type: 'bar',
-      series: [
-        {
-          values: browserAverageLoadTimes.map(data => data.averageLoadTime),
-          text: 'Average Load Time'
-        }
-      ],
-      labels: {
-        template: '%v ms'
-      },
-      scaleX: {
-        labels: browserAverageLoadTimes.map(data => data.browserType)
-      },
-      scaleY: {
-        values: '0:400:100'
-      },
-      title: {
-        text: "Average loading time for different browsers"
-      }
-    };
-
-    // Render the browser and load time relationship chart
-    zingchart.render({
-      id: 'browserLoadTimeChart',
-      data: browserLoadTimeConfig,
-      height: '400',
-      width: '600'
-    });
+    
 
   </script>
 </body>
