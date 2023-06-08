@@ -424,6 +424,40 @@
 
     // Calculate average load time for each browser
     // Create the ZingChart configuration for browser and load time relationship
+    // 计算完浏览器数据和平均加载时间后，构造ZingChart需要的数据格式
+    var chartSeries = browserData.map(item => ({
+      text: item.browserType,
+      values: [item.averageLoadTime]
+    }));
+
+    // 配置ZingChart
+    var myConfig = {
+      type: "bar",
+      title: {
+        text: "Average Load Time by Browser",
+        fontSize: 24,
+      },
+      scaleX: {
+        label: {
+          text: "Browser Type"
+        },
+        items: browserData.map(item => item.browserType),
+      },
+      scaleY: {
+        label: {
+          text: "Average Load Time (ms)"
+        }
+      },
+      series: chartSeries
+    };
+
+    // 渲染图表
+    zingchart.render({
+      id: "browserLoadTimeChart",
+      data: myConfig,
+      height: 400,
+      width: "100%"
+    });
 
   </script>
 </body>
