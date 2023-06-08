@@ -435,8 +435,7 @@
           values: [item.averageLoadTime]
         }));
 
-        // 配置ZingChart
-        var myConfig = {
+                var myConfig = {
           type: "bar",
           title: {
             text: "Average Load Time by Browser",
@@ -446,15 +445,19 @@
             label: {
               text: "Browser Type"
             },
+            // 设置x轴的标签为浏览器类型
             items: browserLoadData.map(item => item.browserType),
-            values: browserLoadData.map(item => item.browserType),
           },
           scaleY: {
             label: {
               text: "Average Load Time (ms)"
             }
           },
-          series: chartSeries
+          // 配置series的值为averageLoadTime，text为浏览器类型
+          series: browserLoadData.map(item => ({
+            text: item.browserType,
+            values: [item.averageLoadTime]
+          }))
         };
 
         // 渲染图表
