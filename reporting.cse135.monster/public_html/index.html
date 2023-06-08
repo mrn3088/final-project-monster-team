@@ -446,7 +446,7 @@
               text: "Browser Type"
             },
             // 设置x轴的标签为浏览器类型
-            //items: browserLoadData.map(item => item.browserType),
+            values: browserLoadData.map(item => item.browserType),
           },
           scaleY: {
             label: {
@@ -456,7 +456,7 @@
           // 配置series的值为averageLoadTime，text为浏览器类型
           series: browserLoadData.map(item => ({
             text: item.browserType,
-            values: [item.averageLoadTime]
+            
           }))
         };
 
