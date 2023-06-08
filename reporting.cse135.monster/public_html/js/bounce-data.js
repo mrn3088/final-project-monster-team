@@ -11,7 +11,7 @@ var stayTimesData = [
 ];
 
 // 从Express应用获取活动记录数据
-axios.get('https://your-express-app/api/activity')
+axios.get('https://cse135.monster/api/activity')
   .then(response => {
     var records = response.data;
     if (!Array.isArray(records)) {
