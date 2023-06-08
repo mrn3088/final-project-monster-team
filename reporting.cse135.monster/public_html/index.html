@@ -250,7 +250,6 @@
         // Create an object to store language load time data
         let languageLoadTimeData = {};
 
-        
         // Process load time data
         for (let i = 0; i < loadTimeData.length; i++) {
           let loadTimeItem = loadTimeData[i];
@@ -339,6 +338,13 @@
     }
     // Initialize objects to store the counts of each browser type and the total load times
     
+    var browserLoadData = [
+      { browserType: 'Chrome', count: 0, loadTimes: [] },
+      { browserType: 'Firefox', count: 0, loadTimes: [] },
+      { browserType: 'Safari', count: 0, loadTimes: [] },
+      { browserType: 'Internet Explorer', count: 0, loadTimes: [] },
+      { browserType: 'Other', count: 0, loadTimes: [] }
+    ];
     // 创建一个对象来存储浏览器与加载时间的数据
     var browserLoadTimeData = {};
 
@@ -383,37 +389,37 @@
           if (browserLoadTimeData[id]) {
             if (userAgent.includes('Chrome')) {
               browserLoadTimeData[id].browser = 'Chrome';
-              browserData[0].count++;
-              browserData[0].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+              browserLoadData[0].count++;
+              browserLoadData[0].loadTimes.push(...browserLoadTimeData[id].loadTimes);
             } else if (userAgent.includes('Firefox')) {
               browserLoadTimeData[id].browser = 'Firefox';
-              browserData[1].count++;
-              browserData[1].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+              browserLoadData[1].count++;
+              browserLoadData[1].loadTimes.push(...browserLoadTimeData[id].loadTimes);
             } else if (userAgent.includes('Safari')) {
               browserLoadTimeData[id].browser = 'Safari';
-              browserData[2].count++;
-              browserData[2].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+              browserLoadData[2].count++;
+              browserLoadData[2].loadTimes.push(...browserLoadTimeData[id].loadTimes);
             } else if (userAgent.includes('Internet Explorer')) {
               browserLoadTimeData[id].browser = 'Internet Explorer';
-              browserData[3].count++;
-              browserData[3].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+              browserLoadData[3].count++;
+              browserLoadData[3].loadTimes.push(...browserLoadTimeData[id].loadTimes);
             } else {
               browserLoadTimeData[id].browser = 'Other';
-              browserData[4].count++;
-              browserData[4].loadTimes.push(...browserLoadTimeData[id].loadTimes);
+              browserLoadData[4].count++;
+              browserLoadData[4].loadTimes.push(...browserLoadTimeData[id].loadTimes);
             }
           }
         }
 
         // 计算每种浏览器的平均加载时间
-        for (var i = 0; i < browserData.length; i++) {
-          var totalLoadTime = browserData[i].loadTimes.reduce((a, b) => a + b, 0);
-          var averageLoadTime = totalLoadTime / browserData[i].loadTimes.length;
-          browserData[i].averageLoadTime = averageLoadTime;
+        for (var i = 0; i < browserLoadData.length; i++) {
+          var totalLoadTime = browserLoadData[i].loadTimes.reduce((a, b) => a + b, 0);
+          var averageLoadTime = totalLoadTime / browserLoadData[i].loadTimes.length;
+          browserLoadData[i].averageLoadTime = averageLoadTime;
         }
 
         // 更新ZingGrid的数据
-        document.getElementById('browserGrid').setData(browserData);
+        document.getElementById('browserGrid').setData(browserLoadData);
     });
 
     // 计算平均加载时间的函数
@@ -425,7 +431,7 @@
     // Calculate average load time for each browser
     // Create the ZingChart configuration for browser and load time relationship
     // 计算完浏览器数据和平均加载时间后，构造ZingChart需要的数据格式
-    var chartSeries = browserData.map(item => ({
+    var chartSeries = browserLoadData.map(item => ({
       text: item.browserType,
       values: [item.averageLoadTime]
     }));
@@ -441,7 +447,7 @@
         label: {
           text: "Browser Type"
         },
-        items: browserData.map(item => item.browserType),
+        items: browserLoadData.map(item => item.browserType),
       },
       scaleY: {
         label: {
