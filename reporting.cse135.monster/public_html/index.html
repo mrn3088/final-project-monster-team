@@ -1,480 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!-- Include ZingGrid, ZingChart, and axios libraries -->
-  <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
-  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <title>Data Visualization</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <title>Reporting Dashboard</title>
+</head>
+<style>
+    .item1 { 
+        grid-area: header; 
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .item2 { 
+        grid-area: main; 
+        border: 1px solid black;
+    }
+    .item3 { 
+        grid-area: left; 
+        border: 1px solid black;
+    }
+    .item4 { 
+        grid-area: right; 
+        border: 1px solid black;
+    }
+    .item5 { 
+        grid-area: grid;
+        border: 1px solid black;
+    }
+
+    ul {
+        list-style: none;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-areas:
+        'header header header header'
+        'main main main main'
+        'left left right right'
+        'grid grid grid grid';
+      gap: 10px;
+      
+      padding: 10px;
+    }
+    
+    .grid-container > div {
+      background-color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      padding: 20px 0;
+      font-size: 30px;
+    }
+</style>
 </head>
 <body>
-  <!-- Define your ZingGrid for Browser usage -->
-  <zing-grid
-    id="browserGrid"
-    caption="Browser Usage"
-    data='[]'>
-    <zg-column index="browserType" header="Browser Type"></zg-column>
-    <zg-column index="count" header="Count"></zg-column>
-  </zing-grid>
+    <div class="grid-container">
+      <div class="item1">
+        <h1>CSE 135 Monster Analytics</h1>
+        <nav>
+            <ul>
+                <li><a href="">User</a></li>
+                <li><a href="">Settings</a></li>
+                <li><button onclick="exit()">logout</button></li>
+            </ul>
+        </nav>
+      </div>
+      <div class="item2" onclick="window.location.href = 'bounceRate.html';">
+        <!-- Bounce Rate -->
+        <div id="loadTimeDistributionChart"></div>
+      </div>
+      <div class="item3">LeftChart
+        <!-- Loadtime Distribution -->
+        <div id="languageLoadTimeChart"></div>
 
-  <!-- Define your ZingGrid for language usage -->
-  <zing-grid
-  id="languageGrid"
-  caption="Language Usage"
-  data='[]'>
-  <zg-column index="language" header="Language"></zg-column>
-  <zg-column index="count" header="Count"></zg-column>
-  </zing-grid>
+      </div>
+      <div class="item4">RightChart
+        <!-- Unkown -->
+        <div id="browserLoadTimeChart"></div>
+      </div>
+      <div class="item5">Grid
+        <!-- Define your ZingGrid for Browser usage -->
+        <zing-grid
+        id="browserGrid"
+        caption="Browser Usage"
+        data='[]'>
+        <zg-column index="browserType" header="Browser Type"></zg-column>
+        <zg-column index="count" header="Count"></zg-column>
+        </zing-grid>
 
-  <!-- Define your ZingChart for load times -->
-  <div id="load-time-chart"></div>
-
-  <!-- Define your activity data section -->
-  <div id="activity">
-    <h1>Activity Data Record</h1>
-    <div id="userJSCookie"></div>
-  </div>
-
-  <div id="loadTimeDistributionChart"></div>
-
-  <div id="languageLoadTimeChart"></div>
-
-  <div id="browserLoadTimeChart"></div>
-
-
-  <script>
-    // Initialize arrays to store the counts of each browser type and language
-    var browserData = [
-      { browserType: 'Chrome', count: 0, loadTimes: [] },
-      { browserType: 'Firefox', count: 0, loadTimes: [] },
-      { browserType: 'Safari', count: 0, loadTimes: [] },
-      { browserType: 'Internet Explorer', count: 0, loadTimes: [] },
-      { browserType: 'Other', count: 0, loadTimes: [] }
-    ];
-
-    // Fetch data for browser usage from your Express app
-    axios.get('https://cse135.monster/api/static')
-      .then(response => {
-        // Your existing logic for browserData here
-        var records = response.data;
-        if (!Array.isArray(records)) {
-          console.error('Response data is not an array:', records);
-          return;
-        }
-        for (var i = 0; i < records.length; i++) {
-          var userAgent = records[i].userAgent;
-          if (userAgent.includes('Chrome')) {
-            browserData[0].count++;
-          } else if (userAgent.includes('Firefox')) {
-            browserData[1].count++;
-          } else if (userAgent.includes('Safari')) {
-            browserData[2].count++;
-          } else if (userAgent.includes('Internet Explorer')) {
-            browserData[3].count++;
-          } else {
-            browserData[4].count++;
-          }
-        }
-        // Update the ZingGrid with the new data
-        document.getElementById('browserGrid').setData(browserData);
-      })
-      .catch(error => {
-        console.error('Error fetching browser data:', error);
-      });
-
-      axios.get('https://cse135.monster/api/static')
-      .then(response => {
-        let languageData = [];
-
-        let data = response.data;
-        let enCount = 0;
-        let zhCount = 0;
-
-        for (let i = 0; i < data.length; i++) {
-          let value = data[i];
-          let language = value.language;
-
-          if (language.includes("en-US")) {
-            enCount++;
-          } else if (language.includes("zh-CN")) {
-            zhCount++;
-          }
-        }
-
-        languageData.push({
-          language: "en-US",
-          count: enCount
-        });
-
-        languageData.push({
-          language: "zh-CN",
-          count: zhCount
-        });
-
-        // Update the ZingGrid with the new data
-        document.getElementById('languageGrid').setData(languageData);
-      })
-      .catch(error => {
-        console.error('Error fetching language data:', error);
-      });
-
-      
-    // Fetch data for performance from your Express app
-    axios.get('https://cse135.monster/api/performance')
-      .then(response => {
-        let loadTimes = [];
-        let loadTimeCounts = {};
-
-        let data = response.data;
-
-        for (let i = 0; i < data.length; i++) {
-          let value = data[i];
-          let startLoad = value.pageStartLoad;
-          let endLoad = value.pageEndLoad;
-          let loadTime = endLoad - startLoad;
-
-          loadTimes.push(loadTime);
-          
-          let browserType = value.browserType;
-
-          // Find the corresponding browser data and add the load time
-          for (let j = 0; j < browserData.length; j++) {
-            if (browserData[j].browserType === browserType) {
-              browserData[j].loadTimes.push(loadTime);
-              break;
-            }
-          }
-        }
-
-        for (let i = 0; i < loadTimes.length; i++) {
-          let loadTime = loadTimes[i];
-          let zone = getLoadTimeZone(loadTime);
-
-          if (!loadTimeCounts[zone]) {
-            loadTimeCounts[zone] = 0;
-          }
-
-          loadTimeCounts[zone]++;
-        }
-
-        let totalLoadTimes = loadTimes.length;
-        
-        
-        
-        
-        let loadTimeDistribution = [];
-
-        for (let zone of loadTimeZones) {
-          let count = loadTimeCounts[zone] || 0;
-          let percentage = ((count / totalLoadTimes) * 100).toFixed(2);
-
-          loadTimeDistribution.push({
-            zone: zone,
-            percentage: parseFloat(percentage)
-          });
-        }
-                
-
-
-        // Create the ZingChart configuration for load time distribution
-        let loadTimeDistributionConfig = {
-          type: 'bar',
-          series: [
-            {
-              values: loadTimeDistribution.map(data => data.percentage),
-              text: 'Load Time Distribution'
-            }
-          ],
-          labels: {
-            template: '%v%'
-          },
-          scaleX: {
-            labels: loadTimeDistribution.map(data => data.zone),
-            itemsOverlap: true,
-            item: {
-              angle: -45
-            }
-          },
-          title : {
-            text: "Load Time Distribution Chart"
-          }
-        };
-
-        // Render the load time distribution chart
-        zingchart.render({
-          id: 'loadTimeDistributionChart',
-          data: loadTimeDistributionConfig,
-          height: '400',
-          width: '600'
-        });
-         let browserAverageLoadTimes = browserData.map(data => {
-          let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
-          return {
-            browserType: data.browserType,
-            averageLoadTime: parseFloat(averageLoadTime)
-          };
-        });
-
-      })
-      .catch(error => {
-        console.error('Error fetching performance data:', error);
-      });
-
-    // Function to determine the load time zone
-    function getLoadTimeZone(loadTime) {
-      if (loadTime >= 0 && loadTime <= 100) {
-        return '0-100 ms';
-      } else if (loadTime > 100 && loadTime <= 200) {
-        return '100-200 ms';
-      } else if (loadTime > 200 && loadTime <= 300) {
-        return '200-300 ms';
-      } else if (loadTime > 300 && loadTime <= 400) {
-        return '300-400 ms';
-      } else {
-        return '> 400 ms';
-      }
-    }
-
-    let loadTimeZones = ['0-100 ms', '100-200 ms', '200-300 ms', '300-400 ms', '> 400 ms'];
-
-
-    // Fetch data for performance and language from your Express app
-    Promise.all([
-      axios.get('https://cse135.monster/api/performance'),
-      axios.get('https://cse135.monster/api/static')
-    ])
-      .then(([performanceResponse, languageResponse]) => {
-        let loadTimeData = performanceResponse.data;
-        let languageData = languageResponse.data;
-
-        // Create an object to store language load time data
-        let languageLoadTimeData = {};
-
-        // Process load time data
-        for (let i = 0; i < loadTimeData.length; i++) {
-          let loadTimeItem = loadTimeData[i];
-          let id = loadTimeItem.id;
-          let loadTime = loadTimeItem.totalLoadTime;
-
-          if (!languageLoadTimeData[id]) {
-            languageLoadTimeData[id] = {
-              loadTimes: [],
-              language: ''
-            };
-          }
-
-          languageLoadTimeData[id].loadTimes.push(loadTime);
-        }
-
-        // Process language data and calculate average load time
-        let enLoadTimes = [];
-        let zhLoadTimes = [];
-
-        for (let i = 0; i < languageData.length; i++) {
-          let languageItem = languageData[i];
-          let id = languageItem.id;
-          let language = languageItem.language;
-
-          if (languageLoadTimeData[id]) {
-            languageLoadTimeData[id].language = language;
-
-            if (language === 'en-US') {
-              enLoadTimes.push(...languageLoadTimeData[id].loadTimes);
-            } else if (language === 'zh-CN') {
-              zhLoadTimes.push(...languageLoadTimeData[id].loadTimes);
-            }
-          }
-        }
-
-        // Calculate average load time for each language
-        let enAverageLoadTime = calculateAverageLoadTime(enLoadTimes);
-        let zhAverageLoadTime = calculateAverageLoadTime(zhLoadTimes);
-
-        // Create the ZingChart configuration for language and load time relationship
-        let languageLoadTimeConfig = {
-          type: 'bar',
-          series: [
-            {
-              values: [parseFloat(enAverageLoadTime), parseFloat(zhAverageLoadTime)],
-              text: 'Average Load Time'
-            }
-          ],
-          labels: {
-            template: '%v ms'
-          },
-          scaleX: {
-            labels: ['en-US', 'zh-CN']
-          },
-          scaleY: {
-            values: '0:400:100'
-          },
-          title: {
-            text: "Average loading time for different languages"
-          }
-        };
-
-        // Render the language and load time relationship chart
-        zingchart.render({
-          id: 'languageLoadTimeChart',
-          data: languageLoadTimeConfig,
-          height: '400',
-          width: '600'
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching performance and language data:', error);
-      });
-
-    // Function to calculate the average load time
-    function calculateAverageLoadTime(loadTimes) {
-      if (loadTimes.length === 0) {
-        return '0.00';
-      }
-
-      let sum = loadTimes.reduce((acc, val) => acc + val, 0);
-      let averageLoadTime = sum / loadTimes.length;
-
-      return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
-    }
-    // Initialize objects to store the counts of each browser type and the total load times
-    
-    var browserLoadData = [
-      { browserType: 'Chrome', count: 0, loadTimes: [] },
-      { browserType: 'Firefox', count: 0, loadTimes: [] },
-      { browserType: 'Safari', count: 0, loadTimes: [] },
-      { browserType: 'Internet Explorer', count: 0, loadTimes: [] },
-      { browserType: 'Other', count: 0, loadTimes: [] }
-    ];
-    // 创建一个对象来存储浏览器与加载时间的数据
-    var browserLoadTimeData = {};
-
-    // 从你的Express应用获取性能数据
-    axios.get('https://cse135.monster/api/performance')
-    .then(response => {
-        // 处理加载时间数据
-        var loadTimeRecords = response.data;
-        if (!Array.isArray(loadTimeRecords)) {
-          console.error('Response data is not an array:', loadTimeRecords);
-          return;
-        }
-        for (var i = 0; i < loadTimeRecords.length; i++) {
-          var id = loadTimeRecords[i].id;
-          var loadTime = loadTimeRecords[i].totalLoadTime;
-
-          if (!browserLoadTimeData[id]) {
-            browserLoadTimeData[id] = {
-              loadTimes: [],
-              browser: ''
-            };
-          }
-
-          browserLoadTimeData[id].loadTimes.push(loadTime);
-        }
-    })
-    .then(() => {
-        // 获取静态数据
-        return axios.get('https://cse135.monster/api/static')
-    })
-    .then(response => {
-        // 处理浏览器数据
-        var browserRecords = response.data;
-        if (!Array.isArray(browserRecords)) {
-          console.error('Response data is not an array:', browserRecords);
-          return;
-        }
-        for (var i = 0; i < browserRecords.length; i++) {
-          var id = browserRecords[i].id;
-          var userAgent = browserRecords[i].userAgent;
-
-          if (browserLoadTimeData[id]) {
-            if (userAgent.includes('Chrome')) {
-              browserLoadTimeData[id].browser = 'Chrome';
-              browserLoadData[0].count++;
-              browserLoadData[0].loadTimes.push(...browserLoadTimeData[id].loadTimes);
-            } else if (userAgent.includes('Firefox')) {
-              browserLoadTimeData[id].browser = 'Firefox';
-              browserLoadData[1].count++;
-              browserLoadData[1].loadTimes.push(...browserLoadTimeData[id].loadTimes);
-            } else if (userAgent.includes('Safari')) {
-              browserLoadTimeData[id].browser = 'Safari';
-              browserLoadData[2].count++;
-              browserLoadData[2].loadTimes.push(...browserLoadTimeData[id].loadTimes);
-            } else if (userAgent.includes('Internet Explorer')) {
-              browserLoadTimeData[id].browser = 'Internet Explorer';
-              browserLoadData[3].count++;
-              browserLoadData[3].loadTimes.push(...browserLoadTimeData[id].loadTimes);
-            } else {
-              browserLoadTimeData[id].browser = 'Other';
-              browserLoadData[4].count++;
-              browserLoadData[4].loadTimes.push(...browserLoadTimeData[id].loadTimes);
-            }
-          }
-        }
-
-        // 计算每种浏览器的平均加载时间
-        for (var i = 0; i < browserLoadData.length; i++) {
-          var totalLoadTime = browserLoadData[i].loadTimes.reduce((a, b) => a + b, 0);
-          var averageLoadTime = totalLoadTime / browserLoadData[i].loadTimes.length;
-          browserLoadData[i].averageLoadTime = averageLoadTime;
-        }
-
-        // 更新ZingGrid的数据
-        document.getElementById('browserGrid').setData(browserLoadData);
-
-        // 计算平均加载时间的函数
-        function calculateAverageLoadTime(loadTimes) {
-          var totalLoadTime = loadTimes.reduce((a, b) => a + b, 0);
-          return totalLoadTime / loadTimes.length;
-        }
-
-        // Calculate average load time for each browser
-        // Create the ZingChart configuration for browser and load time relationship
-        // 计算完浏览器数据和平均加载时间后，构造ZingChart需要的数据格式
-        var chartSeries = browserLoadData.map(item => ({
-          text: item.browserType,
-          values: [item.averageLoadTime]
-        }));
-
-        var myConfig = {
-          type: "bar",
-          title: {
-            text: "Average Load Time by Browser",
-            fontSize: 24,
-          },
-          scaleX: {
-            label: {
-              text: "Browser Type"
-            },
-            // 设置x轴的标签为浏览器类型
-            text: browserLoadData.map(item => item.browserType),
-            values: browserLoadData.map(item => item.browserType),
-          },
-          scaleY: {
-            label: {
-              text: "Average Load Time (ms)"
-            }
-          },
-          // 配置series的值为averageLoadTime，text为浏览器类型
-          series: browserLoadData.map(item => ({
-            text: item.browserType,
-            values: [item.averageLoadTime]
-          }))
-        };
-
-        // 渲染图表
-        zingchart.render({
-          id: "browserLoadTimeChart",
-          data: myConfig,
-          height: 400,
-          width: "100%"
-        });
-
-        })
-        .catch(error => {
-          console.error('Error:', error);
-    });
-
-    
-  </script>
+        <!-- Define your ZingGrid for language usage -->
+        <zing-grid
+        id="languageGrid"
+        caption="Language Usage"
+        data='[]'>
+        <zg-column index="language" header="Language"></zg-column>
+        <zg-column index="count" header="Count"></zg-column>
+        </zing-grid>
+      </div>
+    </div>
+    <script src="js/load-time-data.js"></script>
+    <script src="js/logic.js"></script>
 </body>
 </html>
