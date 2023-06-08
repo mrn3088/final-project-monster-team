@@ -383,6 +383,11 @@
         averageLoadTime: parseFloat(averageLoadTime)
       };
     });
+    
+    // Update the ZingGrid with the new data
+    var grid = document.getElementById('browserLoadTimeGrid');
+    grid.setData(browserAverageLoadTimes);
+
     let browserAverageLoadTimes = browserData.map(data => {
           let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
           return {
