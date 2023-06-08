@@ -207,7 +207,7 @@
           height: '400',
           width: '600'
         });
-        let browserAverageLoadTimes = browserData.map(data => {
+         let browserAverageLoadTimes = browserData.map(data => {
           let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
           return {
             browserType: data.browserType,
@@ -215,6 +215,7 @@
           };
         });
 
+        
         // Create the ZingChart configuration for browser and load time relationship
         let browserLoadTimeConfig = {
           type: 'bar',
