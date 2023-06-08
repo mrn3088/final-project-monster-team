@@ -420,51 +420,56 @@
 
         // 更新ZingGrid的数据
         document.getElementById('browserGrid').setData(browserLoadData);
-    });
 
-    // 计算平均加载时间的函数
-    function calculateAverageLoadTime(loadTimes) {
-      var totalLoadTime = loadTimes.reduce((a, b) => a + b, 0);
-      return totalLoadTime / loadTimes.length;
-    }
-
-    // Calculate average load time for each browser
-    // Create the ZingChart configuration for browser and load time relationship
-    // 计算完浏览器数据和平均加载时间后，构造ZingChart需要的数据格式
-    var chartSeries = browserLoadData.map(item => ({
-      text: item.browserType,
-      values: [item.averageLoadTime]
-    }));
-
-    // 配置ZingChart
-    var myConfig = {
-      type: "bar",
-      title: {
-        text: "Average Load Time by Browser",
-        fontSize: 24,
-      },
-      scaleX: {
-        label: {
-          text: "Browser Type"
-        },
-        items: browserLoadData.map(item => item.browserType),
-      },
-      scaleY: {
-        label: {
-          text: "Average Load Time (ms)"
+        // 计算平均加载时间的函数
+        function calculateAverageLoadTime(loadTimes) {
+          var totalLoadTime = loadTimes.reduce((a, b) => a + b, 0);
+          return totalLoadTime / loadTimes.length;
         }
-      },
-      series: chartSeries
-    };
 
-    // 渲染图表
-    zingchart.render({
-      id: "browserLoadTimeChart",
-      data: myConfig,
-      height: 400,
-      width: "100%"
+        // Calculate average load time for each browser
+        // Create the ZingChart configuration for browser and load time relationship
+        // 计算完浏览器数据和平均加载时间后，构造ZingChart需要的数据格式
+        var chartSeries = browserLoadData.map(item => ({
+          text: item.browserType,
+          values: [item.averageLoadTime]
+        }));
+
+        // 配置ZingChart
+        var myConfig = {
+          type: "bar",
+          title: {
+            text: "Average Load Time by Browser",
+            fontSize: 24,
+          },
+          scaleX: {
+            label: {
+              text: "Browser Type"
+            },
+            items: browserLoadData.map(item => item.browserType),
+          },
+          scaleY: {
+            label: {
+              text: "Average Load Time (ms)"
+            }
+          },
+          series: chartSeries
+        };
+
+        // 渲染图表
+        zingchart.render({
+          id: "browserLoadTimeChart",
+          data: myConfig,
+          height: 400,
+          width: "100%"
+        });
+
+        })
+        .catch(error => {
+          console.error('Error:', error);
     });
 
+    
   </script>
 </body>
 </html>
