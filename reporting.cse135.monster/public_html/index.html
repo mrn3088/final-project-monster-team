@@ -435,7 +435,7 @@
           values: [item.averageLoadTime]
         }));
 
-                var myConfig = {
+        var myConfig = {
           type: "bar",
           title: {
             text: "Average Load Time by Browser",
@@ -457,7 +457,7 @@
           // 配置series的值为averageLoadTime，text为浏览器类型
           series: browserLoadData.map(item => ({
             text: item.browserType,
-            
+            values: [item.averageLoadTime]
           }))
         };
 
