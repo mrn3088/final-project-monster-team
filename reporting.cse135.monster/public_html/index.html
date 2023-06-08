@@ -327,7 +327,16 @@
       });
 
     // Function to calculate the average load time
-    
+    function calculateAverageLoadTime(loadTimes) {
+      if (loadTimes.length === 0) {
+        return '0.00';
+      }
+
+      let sum = loadTimes.reduce((acc, val) => acc + val, 0);
+      let averageLoadTime = sum / loadTimes.length;
+
+      return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
+    }
     // Initialize objects to store the counts of each browser type and the total load times
 
     // Calculate average load time for each browser
@@ -340,108 +349,6 @@
     });
 
     // Create the ZingChart configuration for browser and load time relationship
-    var browserLoadData = [
-    { browserType: 'Chrome', loadTimes: [] },
-    { browserType: 'Firefox', loadTimes: [] },
-    { browserType: 'Safari', loadTimes: [] },
-    { browserType: 'Internet Explorer', loadTimes: [] },
-    { browserType: 'Other', loadTimes: [] }
-  ];
-
-  axios.all([
-    axios.get('https://cse135.monster/api/performance'), 
-    axios.get('https://cse135.monster/api/browser')
-  ])
-  .then(axios.spread((performanceResponse, browserResponse) => {
-    var performanceRecords = performanceResponse.data;
-    var browserRecords = browserResponse.data;
-
-    // First, create a map of browser types by id
-    var browserMap = {};
-    browserRecords.forEach(record => {
-      browserMap[record.id] = record.browserType;
-    });
-
-    // Then, for each performance record, use the browser id to get the browser type
-    for (var i = 0; i < performanceRecords.length; i++) {
-      var record = performanceRecords[i];
-      var loadTime = record.pageEndLoad - record.pageStartLoad;
-      var browserType = browserMap[record.browserId];
-
-      var browserData = browserLoadData.find(data => data.browserType === browserType);
-      if (!browserData) {
-        browserData = browserLoadData[browserLoadData.length - 1]; // 'Other' category
-      }
-      browserData.loadTimes.push(loadTime);
-    }
-
-    // Calculate average load time for each browser
-    var browserAverageLoadTimes = browserLoadData.map(data => {
-      var averageLoadTime = calculateAverageLoadTime(data.loadTimes);
-      return {
-        browserType: data.browserType,
-        averageLoadTime: parseFloat(averageLoadTime)
-      };
-    });
-    
-    // Update the ZingGrid with the new data
-    var grid = document.getElementById('browserLoadTimeGrid');
-    grid.setData(browserAverageLoadTimes);
-
-    let browserAverageLoadTimes = browserData.map(data => {
-          let averageLoadTime = calculateAverageLoadTime(data.loadTimes);
-          return {
-            browserType: data.browserType,
-            averageLoadTime: parseFloat(averageLoadTime)
-          };
-        });
-
-        // Create the ZingChart configuration for browser and load time relationship
-        let browserLoadTimeConfig = {
-          type: 'bar',
-          series: [
-            {
-              values: browserAverageLoadTimes.map(data => data.averageLoadTime),
-              text: 'Average Load Time'
-            }
-          ],
-          labels: {
-            template: '%v ms'
-          },
-          scaleX: {
-            labels: browserAverageLoadTimes.map(data => data.browserType)
-          },
-          scaleY: {
-            values: '0:400:100'
-          },
-          title: {
-            text: "Average loading time for different browsers"
-          }
-        };
-
-        // Render the browser and load time relationship chart
-        zingchart.render({
-          id: 'browserLoadTimeChart',
-          data: browserLoadTimeConfig,
-          height: '400',
-          width: '600'
-        });
-  }))
-  .catch(error => {
-    console.error('Error fetching data:', error);
-  });
-
-  // Function to calculate the average load time
-  function calculateAverageLoadTime(loadTimes) {
-    if (loadTimes.length === 0) {
-      return '0.00';
-    }
-
-    var sum = loadTimes.reduce((acc, val) => acc + val, 0);
-    var averageLoadTime = sum / loadTimes.length;
-
-    return averageLoadTime.toFixed(2); // Keep as string to maintain decimal precision
-  }
 
   </script>
 </body>
