@@ -91,7 +91,9 @@ app.use(jsonParser); // Add parser for JSON
 
 // Define routes
 app.get("/", checkAuthenticated, (req, res) => {
+  console.log("/");
   res.setHeader("Cache-Control", "no-cache");
+  
   res.render("./authapp/index.ejs", {
     name: req.user.name,
     isAdmin: users.find(
@@ -302,6 +304,7 @@ app.post("/logout", (req, res) => {
 
 // Auth check middleware
 function checkAuthenticated(req, res, next) {
+  console.log("checkAuthenticated");
   if (req.isAuthenticated()) {
     return next();
   }
