@@ -317,7 +317,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
     })
     // Change users to work with our sql server
     // Storing into SQL server
-    connection.query("INSERT INTO userInfo (name, email, password, isAdmin, id) VALUES (?, ?, ?, ?, ?);",
+    connection.query("INSERT INTO user (name, email, password, isAdmin, id) VALUES (?, ?, ?, ?, ?);",
       [req.body.name, req.body.email, hashedPassword, 0, userID],
       (err, rows, fields) => { }
     );
