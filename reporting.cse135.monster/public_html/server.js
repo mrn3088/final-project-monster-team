@@ -154,7 +154,7 @@ app.post("/usercrud", async (req, res) => {
     let packet_name = req.body.name;
     let packet_email = req.body.email;
     let packet_hashedPass = await bcrypt.hash(req.body.password, 10);
-
+    console.log(req.body);
     connection.query(
       "INSERT INTO user (name, email, password, isAdmin) VALUES (?, ?, ?, ?)",
       [packet_name, packet_email, packet_hashedPass, packet_isAdmin],
