@@ -149,48 +149,41 @@ app.post("/usercrud", async (req, res) => {
     req.body.password != "" &&
     req.body.isAdmin !== ""
   ) {
-    if (req.body.isAdmin > 0) {
-      packet_isAdmin = 1;
-    } else {
-      packet_isAdmin = 0;
-    }
+    let packet_isAdmin = req.body.isAdmin > 0 ? 1 : 0;
 
-    packet_id = Date.now().toString();
-
-    packet_name = req.body.name;
-    packet_email = req.body.email;
-    packet_hashedPass = await bcrypt.hash(req.body.password, 10);
-
-    const jsonPacket = {
-      name: packet_name,
-      email: packet_email,
-      password: packet_hashedPass,
-      isAdmin: packet_isAdmin,
-      id: packet_id,
-    };
-
-    users.push({
-      id: packet_id,
-      isAdmin: packet_isAdmin,
-      name: packet_name,
-      email: packet_email,
-      password: packet_hashedPass,
-    });
+    let packet_name = req.body.name;
+    let packet_email = req.body.email;
+    let packet_hashedPass = await bcrypt.hash(req.body.password, 10);
 
     connection.query(
-      "INSERT INTO user (name, email, password, isAdmin) \
-        VALUES (?, ?, ?, ?);",
+      "INSERT INTO user (name, email, password, isAdmin) VALUES (?, ?, ?, ?)",
       [packet_name, packet_email, packet_hashedPass, packet_isAdmin],
-      (err, rows, fields) => {
-        console.log("query success, user added");
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.sendStatus(500);
+        } else {
+          console.log("Query success, user added");
+
+          const insertedId = result.insertId;
+
+          const jsonPacket = {
+            id: insertedId,
+            isAdmin: packet_isAdmin,
+            name: packet_name,
+            email: packet_email,
+            password: packet_hashedPass,
+          };
+
+          res.json(jsonPacket);
+        }
       }
     );
-
-    res.json(jsonPacket);
   } else {
     res.sendStatus(400);
   }
 });
+
 app.delete("/usercrud/:id", (req, res) => {
   // Delete from users
   users = users.filter((user) => user.id != req.params.id);
