@@ -129,9 +129,9 @@ app.post("/users", checkAuthenticated, (req, res) => {
   res.render("./authapp/users.ejs");
 });
 
-app.post("/metric", checkAuthenticated, (req, res) => {
+app.post("/report", checkAuthenticated, (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
-  res.render("./authapp/metric.ejs");
+  res.render("./authapp/report.ejs");
 });
 
 // CRUD routes
