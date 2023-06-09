@@ -122,6 +122,11 @@ app.post(
   }
 );
 
+app.get("/users", checkAuthenticated, (req, res) => {
+  res.setHeader("Cache-Control", "no-cache");
+  res.status(403).render("./error.ejs");
+});
+
 app.post("/users", checkAuthenticated, (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.render("./users.ejs");
