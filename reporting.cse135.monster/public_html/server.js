@@ -166,7 +166,7 @@ app.post("/usercrud", async (req, res) => {
           console.log("Query success, user added");
 
           const insertedId = result.insertId;
-
+          console.log(insertedId);
           const jsonPacket = {
             id: insertedId,
             isAdmin: packet_isAdmin,
