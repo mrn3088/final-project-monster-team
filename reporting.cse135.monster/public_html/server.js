@@ -93,7 +93,7 @@ app.use(jsonParser); // Add parser for JSON
 app.get("/", checkAuthenticated, (req, res) => {
   console.log("/");
   res.setHeader("Cache-Control", "no-cache");
-  
+  console.log(users);
   res.render("./authapp/index.ejs", {
     name: req.user.name,
     isAdmin: users.find(
