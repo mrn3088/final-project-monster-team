@@ -162,7 +162,7 @@ app.post("/usercrud", async (req, res) => {
           res.sendStatus(500);
         } else {
           console.log("Query success, user added");
-          
+
           const insertedId = result.insertId;
           console.log(insertedId);
           const jsonPacket = {
@@ -281,9 +281,8 @@ app.put("/usercrud/:id", async (req, res) => {
 
 // New route for logout page
 app.get("/logout", (req, res) => {
-    res.render("./authapp/logout.ejs");
-  });
-
+  res.render("./authapp/logout.ejs");
+});
 
 // Logout route
 app.post("/logout", (req, res) => {
@@ -292,40 +291,12 @@ app.post("/logout", (req, res) => {
       return next(err);
     }
     res.render("./authapp/logout.ejs");
-    // res.redirect("/login");
   });
 });
 
-app.get('/bounce', checkAuthenticated, (req, res) => {
-  res.render('./authapp/bounceRate.ejs')
-})
-
-// app.get('/register', checkNotAuthenticated, (req, res) => {
-//   res.render('./authapp/register.ejs')
-// })
-
-
-// app.post('/register', checkNotAuthenticated, async (req, res) => {
-//   try {
-//     const hashedPassword = await bcrypt.hash(req.body.password, 10)
-//     userID = Date.now().toString()
-//     users.push({
-//       id: userID,
-//       name: req.body.name,
-//       email: req.body.email,
-//       password: hashedPassword
-//     })
-//     // Change users to work with our sql server
-//     // Storing into SQL server
-//     connection.query("INSERT INTO user (name, email, password, isAdmin, id) VALUES (?, ?, ?, ?, ?);",
-//       [req.body.name, req.body.email, hashedPassword, 0, userID],
-//       (err, rows, fields) => { }
-//     );
-//     res.redirect('/login')
-//   } catch {
-//     res.redirect('/register')
-//   }
-// })
+app.get("/bounce", checkAuthenticated, (req, res) => {
+  res.render("./authapp/bounceRate.ejs");
+});
 
 // Auth check middleware
 function checkAuthenticated(req, res, next) {
@@ -341,7 +312,6 @@ function checkNotAuthenticated(req, res, next) {
   }
   next();
 }
-
 
 // Start server
 app.listen(3300, () => {
