@@ -303,7 +303,7 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.get('/bounce', checkNotAuthenticated, (req, res) => {
+app.get('/bounce', checkAuthenticated, (req, res) => {
   res.render('./authapp/bounceRate.ejs')
 })
 
