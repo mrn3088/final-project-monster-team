@@ -65,7 +65,8 @@ axios.get('https://cse135.monster/api/activity')
         series: [
           {
             values: stayTimesData.map(item => item.count),
-            text: 'Stay Time Distribution'
+            text: 'Stay Time Distribution',
+            backgroundColor: '#6B8E23',
           }
         ],
         labels: {
@@ -129,14 +130,14 @@ axios.get('https://cse135.monster/api/activity')
           fontColor: "#8e99a9",
           fontFamily: "Open Sans",
           fontSize: "16",
-          text: 'May 2016',
+          text: 'June 2023',
           align: "left"
         },
         plotarea: {
           margin: "20 0 0 0"
         },
         series: [
-            { text: 'Bounce', values: [bounceValue] },
+            { text: 'Bounce (Less Than 5s)', values: [bounceValue] },
             { text: 'Non-Bounce', values: [totalValue - bounceValue] }
         ],
       };

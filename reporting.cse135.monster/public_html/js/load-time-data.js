@@ -137,7 +137,8 @@ var browserData = [
         series: [
           {
             values: loadTimeDistribution.map(data => data.percentage),
-            text: 'Load Time Distribution'
+            text: 'Load Time Distribution',
+            backgroundColor: '#7E7E7E'
           }
         ],
         labels: {
@@ -251,7 +252,8 @@ var browserData = [
         series: [
           {
             values: [parseFloat(enAverageLoadTime), parseFloat(zhAverageLoadTime)],
-            text: 'Average Load Time'
+            text: 'Average Load Time',
+            backgroundColor: '#582396'
           }
         ],
         labels: {
@@ -261,7 +263,10 @@ var browserData = [
           labels: ['en-US', 'zh-CN']
         },
         scaleY: {
-          values: '0:400:100'
+          values: '0:400:100',
+            label: {
+              text: "Average Load Time (ms)"
+            }
         },
         title: {
           text: "Average loading time for different languages"
@@ -379,16 +384,14 @@ var browserData = [
       // 计算平均加载时间的函数
       function calculateAverageLoadTime(loadTimes) {
         var totalLoadTime = loadTimes.reduce((a, b) => a + b, 0);
-        return totalLoadTime / loadTimes.length;
+        var result = totalLoadTime / loadTimes.length;
+        return result.toFixed(2);
       }
 
       // Calculate average load time for each browser
       // Create the ZingChart configuration for browser and load time relationship
-      // 计算完浏览器数据和平均加载时间后，构造ZingChart需要的数据格式
-      var chartSeries = browserLoadData.map(item => ({
-        text: item.browserType,
-        values: [item.averageLoadTime]
-      }));
+      
+      
 
       var myConfig = {
         type: "bar",
@@ -397,25 +400,27 @@ var browserData = [
           fontSize: 24,
         },
         scaleX: {
-          label: {
-            text: "Browser Type"
-          },
-          // 设置x轴的标签为浏览器类型
-          text: browserLoadData.map(item => item.browserType),
-          values: browserLoadData.map(item => item.browserType),
+          labels: browserLoadData.map(item => item.browserType),
         },
         scaleY: {
           label: {
             text: "Average Load Time (ms)"
           }
         },
-        // 配置series的值为averageLoadTime，text为浏览器类型
-        series: browserLoadData.map(item => ({
-          text: item.browserType,
-          values: [item.averageLoadTime]
-        }))
+        series: [
+          {
+            values: browserLoadData.map(item => item.averageLoadTime),
+            text: 'Average Browser Load Time ',
+            backgroundColor: '#FFA500'
+          }
+        ],
+        labels: {
+          template: 'Load Time: %v ms'
+        }
       };
 
+
+      
       // 渲染图表
       zingchart.render({
         id: "browserLoadTimeChart",
