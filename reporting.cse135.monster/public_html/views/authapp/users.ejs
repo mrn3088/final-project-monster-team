@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <title>User CRUD</title>
+    <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+    <style>
+      body {
+        background: #e6e6e6;
+      }
+
+      zg-cell {
+        height: "200";
+        max-height: "200";
+        vertical-align: top;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container">
+      <h1 class="text-center mt-5">Users Information</h1>
+      <zing-grid
+        caption="Users"
+        compact=""
+        zebra=""
+        role="grid"
+        viewport="tablet-portrait"
+        editor-controls
+        layout-controls
+        pager
+        page-size="5"
+        src="/usercrud"
+        class="mt-4",
+        style="width: 100%"
+      >
+      </zing-grid>
+      <div class="text-center mt-4">
+        <a href="/login" class="btn btn-primary">Back</a>
+      </div>
+    </div>
+  </body>
+</html>

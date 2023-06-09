@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Data Metrics</title>
+	<script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+	<script nonce="undefined" src="https://cdn.zingchart.com/zingchart.min.js"></script>
+	<style>
+		html,
+		body {
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.chart--main {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+
+		.chart--row {
+			display: flex;
+			height: 50%;
+		}
+
+		.chart--container {
+			height: 100%;
+			width: 100%;
+			min-height: 350px;
+		}
+
+		.zc-ref {
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="chart--row">
+		<div id="myChart3" class="chart--container">
+			<a class="zc-ref" href="https://www.zingchart.com">Powered by ZingChart</a>
+		</div>
+		<div id="detailedChart" class="chart--container">
+			<a class="zc-ref" href="https://www.zingchart.com">Powered by ZingChart</a>
+		</div>
+	</div>
+
+	<zing-grid id="grid2" caption="Specific Browse Data" compact="" zebra="" role="grid" viewport="tablet-portrait" editor-controls layout="raw"
+		layout-controls pager page-size="5" sort></zing-grid>
+
+    <p>The question brought in this report is that "what is the preference of website users?" To answer this question, this detailed report focusing on discovering the visited page of users. For most websites, pages like main page will be viewed by every users. In displaying the percentage of user viewing page percentage, those pages take most percentage and make the viewing percentage of other pages become too small to be viewed, which might be useless for data analysis. </p>
+
+    <p>For example, Youtube is one of the most popular video websites. Every user will view the main page and most of them will view the Explore page, which cannot help answer the question of "what is the preference of website users?". However, by discovering percentage of other view pages, it can be found that which category do users most likely to view, movie, gaming or live? This will help the company to improve certain category and find specific users to send related commercials as well.</p>
+    
+    <p>For zhaoxinglyu.site which is our website, we can find that main page, visualize page and database page were accessed most since we are deploying and checking those pages. However, the other pages can be explored more to find that wether users like to see which language's cgi and find which language is popular among users. </p>
+
+    <p>In this detailed report, we decided to use pie chart and normal grid to display the other visiting page percentage. The pie chart can illustrate directly about which page is accessed most and help the viewer to know the exactly data he needs.</p>
+
+    <p>In a conclusion, to answer the question "what is the preference of website users?", we not only collect the view percentage of websites, but also try to use better ways to visualize the small percentage of the viewing website. This helps to avoid the useless data visualization and help the user to find other viewers' preference.</p>    
+
+	<a href="/authapp/">Back</a>
+</body>
+
+
+<script>
+	// ----------------------------------
+	// send GET request and get the JSON object return
+	// dataType: static/performance/activity, target: isCSSAllowed/isImageAllowed/etc
+	// return: array of target data
+	function getData(dataType, target, needParse = true) {
+		var httpRequest = new XMLHttpRequest();
+		var url = 'https://zhaoxinglyu.site/api/' + dataType;
+		httpRequest.open('GET', url, false);
+		httpRequest.send();
+		if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+			var jsonText = httpRequest.responseText;
+			if (needParse)
+				return parseJsonObject(jsonText, target);
+			else
+				return jsonText;
+		};
+	}
+
+	// parse JSON text of http response, and get the target data
+	// param: jsonText, target: isCSSAllowed/isImageAllowed/etc
+	// return: array of target data
+	function parseJsonObject(jsonText, target) {
+		var jsonObject = JSON.parse(jsonText);
+		var res = [];
+		for (var ind in jsonObject) {
+			res.push(jsonObject[ind][target]);
+		}
+		return res;
+	}
+
+	// ----------- Plot Pie Chart -----------
+	window.addEventListener('load', () => {
+		var curPageData = getData('activity', 'curPage');
+
+		// Top 3 accessed pages
+		var first = 0, second = -1, third = -2;
+		var firstPage, secondPage, thirdPage;
+
+		const map = new Map();
+		for (var ind in curPageData) {
+			var page = curPageData[ind];
+			if (map.has(page)) map.set(page, map.get(page) + 1);
+			else map.set(page, 1);
+
+			const accessedTime = map.get(page);
+			if (accessedTime > first) {
+				first = accessedTime;
+				firstPage = page;
+			} else if (accessedTime > second) {
+				second = accessedTime;
+				secondPage = page;
+			} else if (accessedTime > third) {
+				third = accessedTime;
+				thirdPage = page;
+			}
+		}
+
+		map.set('Other pages', 0);
+		for (let [key, value] of map) {
+			if (key == firstPage || key == secondPage || key == thirdPage)
+				continue;
+			map.set('Other pages', map.get('Other pages') + 1);
+		}
+
+		var pageData = [];
+		for (let [key, value] of map) {
+			if (key == firstPage || key == secondPage || key == thirdPage || key == 'Other pages')
+				pageData.push({ text: key, values: [value] });
+		}
+		let chartConfig3 = {
+			type: 'pie',
+			title: {
+				text: 'Accessed page',
+			},
+			legend: {
+				"toggle-action": "hide",
+				"header": {
+					"text": "Accessed page"
+				},
+				"item": {
+					"cursor": "pointer"
+				},
+				"draggable": true,
+				"drag-handler": "icon"
+			},
+			series: pageData
+		};
+
+		zingchart.render({
+			id: 'myChart3',
+			data: chartConfig3,
+			height: '100%',
+			width: '100%',
+		});
+
+	});
+	// ----------- Plot Pie Chart -----------
+</script>
+
+<script>
+	function select(obj, attr) {
+		if (typeof obj !== 'object' || !Array.isArray(attr)) return;
+		let tempArr = [...attr];
+		return JSON.parse(JSON.stringify(obj, tempArr));
+	}
+
+	function noRepeat(json, attr=null) {
+		if (!Array.isArray(json)) {
+			return;
+		}
+
+		for (var i = 0; i < json.length; i++)
+			if (!json[i][attr]) json[i][attr] = 'Unknown';
+
+		for (var i = 0; i < json.length; i++) {
+			for (var j = i + 1; j < json.length;) {
+				if (json[i][attr] === json[j][attr])
+					json.splice(j, 1);
+				else
+					j++;
+			}
+		}
+		return json;
+	}
+
+	// ----------- Plot Dive Deep Pie Chart -----------
+	window.addEventListener('load', () => {
+		var curPageData = getData('activity', 'curPage');
+
+		// Top 3 accessed pages
+		var first = 0, second = -1, third = -2;
+		var firstPage, secondPage, thirdPage;
+
+		const map = new Map();
+		for (var ind in curPageData) {
+			var page = curPageData[ind];
+			if (map.has(page)) map.set(page, map.get(page) + 1);
+			else map.set(page, 1);
+
+			const accessedTime = map.get(page);
+			if (accessedTime > first) {
+				first = accessedTime;
+				firstPage = page;
+			} else if (accessedTime > second) {
+				second = accessedTime;
+				secondPage = page;
+			} else if (accessedTime > third) {
+				third = accessedTime;
+				thirdPage = page;
+			}
+		}
+
+		var pageData = [];
+		for (let [key, value] of map) {
+			if (!(key == firstPage || key == secondPage || key == thirdPage))
+				pageData.push({ text: key, values: [value] });
+		}
+		let detailedChartConfig = {
+			type: 'pie',
+			title: {
+				text: 'Accessed Specific page',
+			},
+			legend: {
+				"toggle-action": "hide",
+				"header": {
+					"text": "Accessed Specific page"
+				},
+				"item": {
+					"cursor": "pointer"
+				},
+				"draggable": true,
+				"drag-handler": "icon"
+			},
+			series: pageData
+		};
+
+		zingchart.render({
+			id: 'detailedChart',
+			data: detailedChartConfig,
+			height: '100%',
+			width: '100%',
+		});
+
+	});
+	// ----------- Plot Dive Deep Pie Chart -----------
+</script>
+
+
+<script>
+	// ----------- Plot Grid -----------
+	var activityData = getData('activity', '', false);
+	const keptActAttr = ['Userid', 'curPage', 'visibleCollection'];
+	var stayData = select(JSON.parse(activityData), keptActAttr);
+
+	for (let i = 0; i < stayData.length; i++) {
+		let record = stayData[i];
+		let vizCollect = JSON.parse(record['visibleCollection']);
+
+		let stayTime = 'Unknown';
+		if (vizCollect) {
+			let times = Object.keys(vizCollect);
+			if (times.length >= 2) {
+				times.map(str => { return Number(str); });
+				times.sort();
+				// console.log(vizCollect[vizCollect.length - 1][0]);
+				stayTime = times[times.length - 1] - times[0];
+			}
+		}
+		stayData[i]['stayTime (ms)'] = stayTime;			
+	}
+
+	// console.log(stayData);
+
+	var stayData = select(stayData, ['Userid', 'curPage', 'stayTime (ms)']);
+	const zgRef2 = document.querySelector('#grid2');
+	zgRef2.setData(stayData);
+	// ----------- Plot Grid -----------
+</script>
+
+
+</html>
