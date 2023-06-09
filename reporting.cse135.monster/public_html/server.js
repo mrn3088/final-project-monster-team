@@ -304,7 +304,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get('/bounce', checkNotAuthenticated, (req, res) => {
-  res.render('./authapp/bounce.ejs')
+  res.render('./authapp/bounceRate.ejs')
 })
 
 app.get('/register', checkNotAuthenticated, (req, res) => {
