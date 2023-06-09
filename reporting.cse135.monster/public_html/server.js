@@ -83,7 +83,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(methodOverride("_method"));
 
 // Create application/json parser
 var jsonParser = bodyParser.json();
@@ -301,32 +300,32 @@ app.get('/bounce', checkAuthenticated, (req, res) => {
   res.render('./authapp/bounceRate.ejs')
 })
 
-app.get('/register', checkNotAuthenticated, (req, res) => {
-  res.render('./authapp/register.ejs')
-})
+// app.get('/register', checkNotAuthenticated, (req, res) => {
+//   res.render('./authapp/register.ejs')
+// })
 
 
-app.post('/register', checkNotAuthenticated, async (req, res) => {
-  try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    userID = Date.now().toString()
-    users.push({
-      id: userID,
-      name: req.body.name,
-      email: req.body.email,
-      password: hashedPassword
-    })
-    // Change users to work with our sql server
-    // Storing into SQL server
-    connection.query("INSERT INTO user (name, email, password, isAdmin, id) VALUES (?, ?, ?, ?, ?);",
-      [req.body.name, req.body.email, hashedPassword, 0, userID],
-      (err, rows, fields) => { }
-    );
-    res.redirect('/login')
-  } catch {
-    res.redirect('/register')
-  }
-})
+// app.post('/register', checkNotAuthenticated, async (req, res) => {
+//   try {
+//     const hashedPassword = await bcrypt.hash(req.body.password, 10)
+//     userID = Date.now().toString()
+//     users.push({
+//       id: userID,
+//       name: req.body.name,
+//       email: req.body.email,
+//       password: hashedPassword
+//     })
+//     // Change users to work with our sql server
+//     // Storing into SQL server
+//     connection.query("INSERT INTO user (name, email, password, isAdmin, id) VALUES (?, ?, ?, ?, ?);",
+//       [req.body.name, req.body.email, hashedPassword, 0, userID],
+//       (err, rows, fields) => { }
+//     );
+//     res.redirect('/login')
+//   } catch {
+//     res.redirect('/register')
+//   }
+// })
 
 // Auth check middleware
 function checkAuthenticated(req, res, next) {
