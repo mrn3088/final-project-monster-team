@@ -291,6 +291,7 @@ app.get("/logout", (req, res) => {
     res.render("./authapp/logout.ejs");
   });
 
+
 // Logout route
 app.post("/logout", (req, res) => {
   req.logOut(function (err) {
@@ -302,9 +303,15 @@ app.post("/logout", (req, res) => {
   });
 });
 
+app.get('/bounce', checkNotAuthenticated, (req, res) => {
+  res.render('./authapp/bounce.ejs')
+})
+
 app.get('/register', checkNotAuthenticated, (req, res) => {
   res.render('./authapp/register.ejs')
 })
+
+
 app.post('/register', checkNotAuthenticated, async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10)

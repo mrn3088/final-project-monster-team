@@ -93,11 +93,15 @@
             <ul>
                 <li><a href="">User</a></li>
                 <li><a href="">Settings</a></li>
-                <button onclick="exit()">logout</button>
+                <form action="/logout" method="POST">
+                  <button type="submit" >Log Out</button>
+                </form>
+                
             </ul>
         </nav>
       </div>
-      <div class="item2" onclick="window.location.href = 'bounceRate.html';">
+
+      <div class="item2" onclick="window.location.href = '/bounce';">
         <!-- Bounce Rate -->
         <div id="bounceRateLine"></div>
       </div>
