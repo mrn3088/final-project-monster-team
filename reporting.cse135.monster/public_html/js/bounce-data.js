@@ -41,26 +41,105 @@ axios.get('https://cse135.monster/api/activity')
       // 总量增加1
       totalValue++;
     }
-
-    // 计算bounce rate
+    
     var bounceRate = bounceValue / totalValue;
-
-    // 更新ZingGrid的数据
     document.getElementById('stayTimesGrid').setData(stayTimesData);
+    
+
+    // 计算完停留时间数据后，构造ZingChart需要的数据格式
+    
+    // 计算完停留时间数据后，构造ZingChart需要的数据格式
+    var barConfig = {
+        type: 'bar',
+        title: {
+          text: 'Number of Records by Stay Time',
+          fontSize: 24,
+        },
+        scaleX: {
+          labels: stayTimesData.map(item => item.range),
+          itemsOverlap: true,
+          item: {
+            angle: 0
+          }
+        },
+        series: [
+          {
+            values: stayTimesData.map(item => item.count),
+            text: 'Stay Time Distribution'
+          }
+        ],
+        labels: {
+          template: '%v'
+        }
+      };
+  
+      // 渲染条形图
+      zingchart.render({
+        id: 'stayTimesBar',
+        data: barConfig,
+        height: 400,
+        width: '100%'
+      });
+  
+    
 
     // 创建饼图展示bounce rate和其他比例
+    
     var pieConfig = {
-      type: 'pie',
-      title: {
-        text: 'Bounce Rate',
-        fontSize: 24,
-      },
-      series: [
-        { text: 'Bounce', values: [bounceValue] },
-        { text: 'Non-Bounce', values: [totalValue - bounceValue] }
-      ]
-    };
-
+        type: "pie",
+        plot: {
+          borderColor: "#2B313B",
+          borderWidth: 5,
+          // slice: 90,
+          valueBox: {
+            placement: 'out',
+            text: '%t\n%npv%',
+            fontFamily: "Open Sans"
+          },
+          tooltip: {
+            fontSize: '18',
+            fontFamily: "Open Sans",
+            padding: "5 10",
+            text: "%npv%"
+          },
+          animation: {
+            effect: 2,
+            method: 5,
+            speed: 900,
+            sequence: 1,
+            delay: 3000
+          }
+        },
+        source: {
+          text: 'gs.statcounter.com',
+          fontColor: "#8e99a9",
+          fontFamily: "Open Sans"
+        },
+        title: {
+          fontColor: "#8e99a9",
+          text: 'Bounce Rate',
+          align: "left",
+          offsetX: 10,
+          fontFamily: "Open Sans",
+          fontSize: 25
+        },
+        subtitle: {
+          offsetX: 10,
+          offsetY: 10,
+          fontColor: "#8e99a9",
+          fontFamily: "Open Sans",
+          fontSize: "16",
+          text: 'May 2016',
+          align: "left"
+        },
+        plotarea: {
+          margin: "20 0 0 0"
+        },
+        series: [
+            { text: 'Bounce', values: [bounceValue] },
+            { text: 'Non-Bounce', values: [totalValue - bounceValue] }
+        ],
+      };
     // 渲染饼图
     zingchart.render({
       id: 'bounceRatePie',
@@ -69,30 +148,4 @@ axios.get('https://cse135.monster/api/activity')
       width: '100%'
     });
 
-    // 计算完停留时间数据后，构造ZingChart需要的数据格式
-    var barConfig = {
-      type: 'bar',
-      title: {
-        text: 'Number of Records by Stay Time',
-        fontSize: 24,
-      },
-      scaleX: {
-        label: {
-          text: 'Stay Time Range'
-        },
-        values: stayTimesData.map(item => item.range),
-      },
-      series: stayTimesData.map(item => ({
-        text: item.range,
-        values: [item.count]
-      }))
-    };
-
-    // 渲染条形图
-    zingchart.render({
-      id: 'stayTimesBar',
-      data: barConfig,
-      height: 400,
-      width: '100%'
-    });
   });
