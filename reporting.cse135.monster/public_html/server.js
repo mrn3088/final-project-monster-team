@@ -22,7 +22,6 @@ const bcrypt = require("bcrypt"); // For password hashing
 const passport = require("passport"); // For authentication
 const flash = require("express-flash"); // For displaying messages
 const session = require("express-session"); // For handling sessions
-const methodOverride = require("method-override"); // For HTTP method overriding
 const bodyParser = require("body-parser"); // For parsing request body
 
 const mysql = require("mysql2"); // MySQL client
@@ -163,7 +162,7 @@ app.post("/usercrud", async (req, res) => {
           res.sendStatus(500);
         } else {
           console.log("Query success, user added");
-
+          
           const insertedId = result.insertId;
           console.log(insertedId);
           const jsonPacket = {
@@ -196,6 +195,7 @@ app.delete("/usercrud/:id", (req, res) => {
 
   res.sendStatus(200);
 });
+
 app.patch("/usercrud/:id", async (req, res) => {
   // Update users
   usersIndex = users.findIndex((user) => user.id == req.params.id);
