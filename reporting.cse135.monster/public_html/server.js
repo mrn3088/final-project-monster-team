@@ -25,7 +25,7 @@ const session = require("express-session"); // For handling sessions
 const methodOverride = require("method-override"); // For HTTP method overriding
 const bodyParser = require("body-parser"); // For parsing request body
 
-const mysql = require("mysql"); // MySQL client
+const mysql = require("mysql2"); // MySQL client
 
 // Define the MySQL connection
 const connection = mysql.createConnection({
