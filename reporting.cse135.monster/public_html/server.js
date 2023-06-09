@@ -302,6 +302,31 @@ app.post("/logout", (req, res) => {
   });
 });
 
+app.get('/register', checkNotAuthenticated, (req, res) => {
+  res.render('./authapp/register.ejs')
+})
+app.post('/register', checkNotAuthenticated, async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    userID = Date.now().toString()
+    users.push({
+      id: userID,
+      name: req.body.name,
+      email: req.body.email,
+      password: hashedPassword
+    })
+    // Change users to work with our sql server
+    // Storing into SQL server
+    connection.query("INSERT INTO userInfo (name, email, password, isAdmin, id) VALUES (?, ?, ?, ?, ?);",
+      [req.body.name, req.body.email, hashedPassword, 0, userID],
+      (err, rows, fields) => { }
+    );
+    res.redirect('/login')
+  } catch {
+    res.redirect('/register')
+  }
+})
+
 // Auth check middleware
 function checkAuthenticated(req, res, next) {
   console.log("checkAuthenticated");
