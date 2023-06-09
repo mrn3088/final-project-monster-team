@@ -1,0 +1,51 @@
+
+
+<!-- Idea from the following sources:
+https://blog.csdn.net/john_dwh/article/details/128651224 -->
+
+<!-- And the following repositories:
+https://github.com/bradtraversy/node_passport_login -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>CSE 135 Reporting!</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<style>
+		.btn-fixed {
+			width: 200px; /* change this value as per your requirement */
+		}
+	</style>
+    
+</head>
+
+<body class="bg-light">
+    <div class="container text-center">
+        <h1 class="mt-5">Welcome, <%= name %>!</h1>
+        <h1>CSE 135 HW4 Lives!</h1>
+        <h2>reporting.cse135.monster</h2>
+        <script>
+            document.write(`Live @ ${new Date()}`);
+        </script>
+
+        <form action="/report" method="POST" class="mt-3">
+            <button type="submit" class="btn btn-primary btn-fixed">Get Detailed Report</button>
+        </form>
+
+        <% if(isAdmin) { %>
+        <form action="/users" method="POST" class="mt-3">
+            <button type="submit" class="btn btn-info btn-fixed">User CRUD</button>
+        </form>
+        <% } %>
+
+		<form action="/logout" method="POST" class="mt-3">
+            <button type="submit" class="btn btn-danger btn-fixed">Log Out</button>
+        </form>
+    </div>
+    
+</body>
+
+</html>
