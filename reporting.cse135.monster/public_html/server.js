@@ -29,11 +29,11 @@ const mysql = require("mysql"); // MySQL client
 
 // Define the MySQL connection
 const connection = mysql.createConnection({
-  host: "localhost",
-  port: "3306",
-  user: "root",
-  password: "Mrn3088208816!",
-  database: "ReportingDatabase",
+  host: "db-mysql-cse135-monster-do-user-13928624-0.b.db.ondigitalocean.com",
+  port: "25060",
+  user: "doadmin",
+  password: "AVNS_bqxqJL1DWue3xadCli8",
+  database: "Reporting",
 });
 
 // Connect to the MySQL server
