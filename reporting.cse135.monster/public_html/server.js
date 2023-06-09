@@ -92,7 +92,7 @@ app.get("/", checkAuthenticated, (req, res) => {
   console.log("/");
   res.setHeader("Cache-Control", "no-cache");
   console.log(users);
-  res.render("./authapp/index.ejs", {
+  res.render("./index.ejs", {
     name: req.user.name,
     isAdmin: users.find(
       (u) => req.user.name.toLowerCase() === u.name.toLowerCase()
@@ -102,7 +102,7 @@ app.get("/", checkAuthenticated, (req, res) => {
 
 app.get("/login", checkNotAuthenticated, (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
-  res.render("./authapp/login.ejs");
+  res.render("./login.ejs");
 });
 
 app.post(
@@ -113,7 +113,7 @@ app.post(
     failureFlash: true,
   }),
   function (req, res) {
-    res.render("./authapp/index.ejs", {
+    res.render("./index.ejs", {
       name: req.user.name,
       isAdmin: users.find(
         (u) => req.user.name.toLowerCase() === u.name.toLowerCase()
@@ -124,12 +124,12 @@ app.post(
 
 app.post("/users", checkAuthenticated, (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
-  res.render("./authapp/users.ejs");
+  res.render("./users.ejs");
 });
 
 app.post("/report", checkAuthenticated, (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
-  res.render("./authapp/report.ejs");
+  res.render("./report.ejs");
 });
 
 // CRUD routes
@@ -281,7 +281,7 @@ app.put("/usercrud/:id", async (req, res) => {
 
 // New route for logout page
 app.get("/logout", (req, res) => {
-  res.render("./authapp/logout.ejs");
+  res.render("./logout.ejs");
 });
 
 // Logout route
@@ -290,12 +290,12 @@ app.post("/logout", (req, res) => {
     if (err) {
       return next(err);
     }
-    res.render("./authapp/logout.ejs");
+    res.render("./logout.ejs");
   });
 });
 
 app.get("/bounce", checkAuthenticated, (req, res) => {
-  res.render("./authapp/bounceRate.ejs");
+  res.render("./bounceRate.ejs");
 });
 
 // Auth check middleware
