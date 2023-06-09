@@ -16,6 +16,33 @@
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        padding: 2em;
+    }
+    .item1>h1 {
+        text-align: left;
+    }
+    nav {
+        margin-left: 20%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    a {
+        text-decoration: none;
+    }
+    ul {
+        
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        list-style: none;
+    }
+    li {
+        display: inline;
+        margin: 0 10px;
+        background-color: #f1f1f1;
     }
     .item2 { 
         grid-area: main; 
@@ -66,7 +93,7 @@
             <ul>
                 <li><a href="">User</a></li>
                 <li><a href="">Settings</a></li>
-                <li><button onclick="exit()">logout</button></li>
+                <button onclick="exit()">logout</button>
             </ul>
         </nav>
       </div>
