@@ -55,6 +55,7 @@ We utilize several online code, resources, and tutorials. They are refered in co
 When designing the dashboard, I carefully considered the data we wanted to display and chose chart types that effectively communicate the relevant metrics to the users. Here's an explanation of my design decisions and the reasoning behind them:
 
 1. Daily Bounce Rate Line Chart:
+Note: this line chart is clickable that will redirect to the bounce rate detailed page.
 The line chart was chosen to represent the daily bounce rate because it effectively displays trends and patterns over time. The x-axis represents the dates, while the y-axis represents the bounce rate percentage. This chart type allows users to easily identify any spikes or dips in the bounce rate, helping them understand the overall performance of the website over a given period. It provides a clear visualization of the daily fluctuations and helps track progress in reducing the bounce rate.
 
 However, it's important to note that our current statistics do not provide an extensive data set to generate a detailed, daily bounce rate chart. As such, the data points on our chart are quite sparse, often represented as either 1, 0, or 0.5, reflecting a high level of bounce rate volatility. This limitation could potentially be misleading, suggesting drastic fluctuations in user behavior when in reality it might be a byproduct of our limited dataset.
