@@ -203,11 +203,13 @@ app.delete("/usercrud/:id", (req, res) => {
 
 app.patch("/usercrud/:id", async (req, res) => {
   // Update users
+  console.log(req.body);
+  console.log('patch');
   usersIndex = users.findIndex((user) => user.id == req.params.id);
   key = Object.keys(req.body)[0];
 
   if (key == "isAdmin" && req.body[key] === "") req.body[key] = 0;
-
+  console.log(users);
   if (key === "password") {
     const hashedPassword = await bcrypt.hash(req.body[key], 10);
     users[usersIndex][key] = hashedPassword;
