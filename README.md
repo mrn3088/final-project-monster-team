@@ -20,10 +20,36 @@ Then you should be good to log in. If there're still issues to log in, please co
 The `sudo` password is `cse135grader`.
 
 ## Grader Account (website):
-<!-- TODO -->
 1. Grader Basic Login
-2. Grader Admin Login
+username: grader-non-admin
+email: grader-non-admin@cs135.monster
+password: grader-non-admin
 
+2. Grader Admin Login
+username: grader-admin 
+email: grader-admin@cs135.monster
+password: grader-admin
+
+## Design choice
+### 1. User Auth
+We use `bcrypt` to hash the password and store it in the database. 
+We also use `Passport.js` to authenticate the user.
+The pages are rendered based on the user's role. 
+Users cannot access certain without login, and they cannot access page through url. 
+You can try `reporting.cse135.monster/users` to see there is a designed error page. 
+We also designed 404 pages for other pages that are not found.
+
+### 2. Database
+We use `MySQL` as our database.
+
+### 3. Server
+We use `node.js` on `express` as our server. 
+
+### 4. CRUD 
+We use `ZingGrid` to display the data in the database. We also use its built-in functions to implement CRUD.
+
+### 5. References
+We utilize several online code, resources, and tutorials. They are refered in corresponding source code files.
 ---
 ## Dashboard
 When designing the dashboard, I carefully considered the data we wanted to display and chose chart types that effectively communicate the relevant metrics to the users. Here's an explanation of my design decisions and the reasoning behind them:
