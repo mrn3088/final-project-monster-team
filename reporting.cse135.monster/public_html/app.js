@@ -177,6 +177,7 @@ app.post("/usercrud", async (req, res) => {
             email: packet_email,
             password: packet_hashedPass,
           };
+          users.push(jsonPacket);
           console.log(jsonPacket);
 
           res.json(jsonPacket);
