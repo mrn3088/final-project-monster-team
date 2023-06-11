@@ -140,9 +140,7 @@ app.post("/report", checkAuthenticated, (req, res) => {
 // CRUD routes
 app.get("/usercrud", (req, res) => {
   connection.query("SELECT * from user;", (err, rows, fields) => {
-    // rows[foo] = 'bar';
     res.json(rows);
-    // res.json({foo:'bar'});
   });
 });
 app.post("/usercrud", async (req, res) => {
@@ -178,7 +176,6 @@ app.post("/usercrud", async (req, res) => {
             password: packet_hashedPass,
           };
           users.push(jsonPacket);
-          console.log(jsonPacket);
 
           res.json(jsonPacket);
         }
@@ -191,15 +188,22 @@ app.post("/usercrud", async (req, res) => {
 
 app.delete("/usercrud/:id", (req, res) => {
   // Delete from users
-  users = users.filter((user) => user.id != req.params.id);
 
   connection.query(
     "DELETE FROM user WHERE id = ?;",
     [req.params.id],
-    (err, rows, fields) => {}
+    (err, rows, fields) => {
+      if (err) {
+        console.error(err);
+        res.sendStatus(500);
+      } else {
+        console.log("Query success, user deleted");
+        users = users.filter((user) => user.id != req.params.id);
+        res.sendStatus(200);
+      }
+    }
   );
-
-  res.sendStatus(200);
+  // res.sendStatus(200);
 });
 
 app.patch("/usercrud/:id", async (req, res) => {
